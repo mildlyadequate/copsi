@@ -61,7 +61,7 @@ typings/
 .next
 
 #Certificates
-**/certificate/*
+certificate/*
 
 # Desktop Ini
 *.ini
