@@ -61,12 +61,7 @@ typings/
 .next
 
 #Certificates
-certificate/
-*.crt
-*.key
-*.pem
-*.csr
+**/certificate/*
 
 # Desktop Ini
-Desktop.ini
-desktop.ini
+*.ini
