@@ -1,0 +1,18 @@
+{
+  "name": "studienprojekt",
+  "productName": "Studienprojekt",
+  "version": "0.1.0",
+  "description": "Eine nice Beschreibung",
+  "main": "main-secure.js",
+  "scripts": {
+    "package-win": "electron-packager . spotify-lyrics --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/app-icon/win/app.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Spotify Lyrics\"",
+    "start": "electron .",
+    "create-installer-win": "node installers/windows/createinstaller.js"
+  },
+  "author": "Sebastian Schuler",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^3.0.3",
+    "socket.io": "^2.1.1"
+  }
+}

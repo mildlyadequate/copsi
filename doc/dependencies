@@ -1,0 +1,11 @@
+- electron-builder
+- electron-config
+- socket.io
+- momentjs
+- shortid
+
+
+evtl:
+- auto-updater
+- temp
+- electron-context-menu

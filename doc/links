@@ -1,0 +1,11 @@
+
+SocketIO SSL
+https://stackoverflow.com/questions/6599470/node-js-socket-io-with-ssl
+
+Msg history
+https://stackoverflow.com/questions/17509866/is-there-a-good-way-to-save-socket-io-message-history
+
+Server / channel
+https://socket.io/docs/rooms-and-namespaces/
+-> namespace = server / room = channel
+

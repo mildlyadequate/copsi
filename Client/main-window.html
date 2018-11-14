@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+
+    <title>Colapp</title>
+
+    <!-- STYLESHEETS -->
+    <link type='text/css' rel='stylesheet' href='assets/css/materialize.css'  media='screen,projection'/>
+    <link type='text/css' rel='stylesheet' href='assets/icons/icons.css'  media='screen,projection'/>
+
+</head>
+<body>
+        
+
+    <div class='row'>
+        <div id="chatContainer" class='col s6 blue lighten-3' style='height: 300px;overflow-y: scroll;'>
+            <div id='chatDiv' style='min-height: 300px;'>
+    
+            </div> <!-- chatDiv -->
+        </div> <!-- col 1 -->
+    </div> <!-- row -->
+           
+    <div class='row'>
+        <div class='col s6'>
+            <div class="input-field">
+                <input placeholder="Enter Message" id="message-input" type="text" class="">
+            </div>
+        </div>
+    </div>
+
+    <div class='row'>
+        <div class='col s6'>
+            <button class="btn waves-effect waves-light right" onclick='test()'>Send
+                    <i class="material-icons right">send</i>
+            </button>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script type='text/javascript' src='main-window-script.js'></script>
+    <script type='text/javascript' src='assets/js/materialize.js'></script>
+
+</body>
+</html>
