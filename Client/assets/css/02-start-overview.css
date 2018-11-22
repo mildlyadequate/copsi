@@ -11,7 +11,11 @@
     padding: 0;
 }
 
-.sm-teams-header {
+.sm-teams {
+    width: auto !important;
+}
+
+.sm-channels-header {
     height:  48px;
     border-bottom:  1px solid #a0a0a0;
     margin-bottom: 16px;
@@ -19,6 +23,7 @@
     padding-right: 12px; */
 }
 
+/* might delete later (bc of sm-channels-header) */
 .sm-content-header {
     height:  48px;
     border-bottom:  1px solid #a0a0a0;
@@ -29,11 +34,11 @@
     margin-bottom: 20px;
 }
 
-.sm-team-icons-activated {
-    margin-bottom: 20px;
+.sm-activated {
     color: #9b9b9b;
 }
 
+/* kinda sucks please ignore
 .sm-team-icons-activated::before {
     content: " ";
     margin-left: -70px;
@@ -41,10 +46,6 @@
     width: 40px;
     border-radius: 20px;
     height: 33px;
-    /* transition: height .25s ease-in-out,margin-top .25s ease-in-out; */
+    /* transition: height .25s ease-in-out,margin-top .25s ease-in-out; 
     background: #69B22F;
-}
-
-.sm-teams {
-    width: auto !important;
-}
+} */

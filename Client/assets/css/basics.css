@@ -1,0 +1,44 @@
+/* basic sheet used for every (!) "page" */
+
+
+
+/* ---------------------- Scrolling ---------------------- */
+/* reset overflow / scrollbar in body and html */
+
+body, html {
+    overflow: hidden;
+    height: 100%;
+    /* height should be 100vh
+    section and columns height should be 100vh too */
+}
+
+/* start overview: news scroll
+    important: team, channels and members also need their own height!  */
+#sm-news-scroll {
+    overflow-y: scroll;
+    height: 547px;
+}
+
+/* ---------------------- Padding Fix ---------------------- */
+/* bulmas columns have negative margin by default, need to fix that by adding selfmade paddings
+    (please dont rant just go with it ok)
+    sm-t: top padding
+    sm-b: bottom padding
+    sm-r: right padding
+    sm-l left padding */
+
+.sm-t {
+    padding-top: 1.5rem;
+}
+    
+.sm-b {
+    padding-bottom: 1.5rem;
+}
+    
+.sm-l {
+    padding-left: 1.5rem;
+}
+    
+.sm-r {
+    padding-right: 1.5rem;
+}
