@@ -951,7 +951,7 @@ a.has-text-info:hover, a.has-text-info:focus {
 }
 
 a.has-text-success:hover, a.has-text-success:focus {
-  color: #1ca64c !important;
+  color: #00d1b2 !important;
 }
 
 .has-background-success {
@@ -4518,7 +4518,7 @@ a.box:active {
 }
 
 .notification.is-primary {
-  background-color: #1ca64c;
+  background-color: #00d1b2;
   color: #fff;
 }
 

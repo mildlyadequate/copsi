@@ -1,0 +1,11 @@
+body, html {
+    overflow: hidden;
+    height: 100%;
+}
+
+/* start overview: news scroll
+    important: team, channels and members also need their own height!  */
+#sm-news-scroll {
+    overflow-y: scroll;
+    height: 547px;
+}
