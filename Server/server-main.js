@@ -23,7 +23,6 @@ io.on('connection', (socket) => {
     // initialize this client's sequence number
     sequenceNumberByClient.set(socket, 1);
 
-
     // when socket disconnects, remove it from the list:
     socket.on('disconnect', () => {
         sequenceNumberByClient.delete(socket);
@@ -35,12 +34,38 @@ io.on('connection', (socket) => {
         socket.emit('message:hci:received',[userMe,msg]);
     });
 });
-/*
+
 // Custom Namespace 
 var hci = server.of('/hci');
-hci.on('connection', function(socket){
-    console.log('Client '+socket.id+' connected to HCI.');
-});
+
+var hci = server.of('/mediengestaltung');
+
+var hci = server.of('/eis');
+
+for(var i=1;i<10;i++){
+
+    hci.on('connection', function(socket){
+
+        socket.on('message:send', (msg) => {
+            console.log(msg);
+            socket.emit('message:hci:received',[userMe,msg]);
+        });
+
+        socket.on('prof:msg', (msg) => {
+            console.log(msg);
+            socket.emit('message:prof:received',[userMe,msg]);
+        });
+
+
+
+
+
+
+
+        console.log('Client '+socket.id+' connected to HCI.');
+    });
+
+}
 
 // sends each client its current sequence number
 setInterval(() => {
@@ -49,4 +74,4 @@ setInterval(() => {
 
         sequenceNumberByClient.set(client, sequenceNumber + 1);
     }
-}, 1000);*/
+}, 1000);

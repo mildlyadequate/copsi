@@ -58,7 +58,7 @@ app.on('ready', function(){
 // IPC
 
 ipcMain.on('message:all:send',function(e,msg){
-    ioClient.emit('message:hci:send',msg); // everyone gets it but the sender
+    ioClient.emit('message:datenbanken:send',msg); // everyone gets it but the sender
 });
 
 // SOCKET IO
@@ -73,7 +73,7 @@ ioClient.on("seq-num", function(e){
     //console.log(e);
 });
 
-ioClient.on('message:hci:received', (data) => {
+ioClient.on('message:datenbank:received', (data) => {
     mainWindow.webContents.send('message:received', data);
 });
   

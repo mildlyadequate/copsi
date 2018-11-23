@@ -1,6 +1,8 @@
 const electron = require('electron');
 const url = require('url');
 const path = require('path');
+var http = require('http');
+var https = require('https');
 const {
     app,
     BrowserWindow,
@@ -13,16 +15,11 @@ process.env.DEBUG = '*';
 
 // SocketIO
 const io = require("socket.io-client");
-const ioClient = io.connect("https://localhost:8543", {
-    secure: true
-});
+//const ioClient = io.connect("https://localhost:8443", {
+//    secure: true,  rejectUnauthorized: false
+//});
+var ioClient = io.connect('https://localhost:8443', {secure: true,rejectUnauthorized: false});
 
-// Custom Modules
-let msgModule = require('../shared-objects/message-object.js');
-let Message = msgModule.Message;
-let usrModule = require('../shared-objects/user-object.js');
-let User = usrModule.User;
-let utils = require('./custom_modules/utils.js');
 
 // Window Size
 var currentWidth = 1024;

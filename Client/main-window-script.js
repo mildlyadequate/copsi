@@ -9,8 +9,11 @@ const txtMessageInput = document.getElementById('message-input');
 
 // IPC 
 
+
 ipcRenderer.on('message:received',function(e,msg){
     appendChatMessage(msg);
+
+    // 
 });
 
 // FUNCTIONS

@@ -8,7 +8,9 @@ function Message (id, type, sent, content, sender) {
     */
     this.sent = sent,
     this.content = content,
-    this.sender = sender
+    this.sender = sender+
+    kurs
+    channel
     /*this.fullName = function() {
         return this.firstName + " " + this.lastName;
     }*/
