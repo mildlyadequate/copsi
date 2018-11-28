@@ -2,7 +2,7 @@ var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var mongo = require('mongodb');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 
 server.listen(8000);
 
