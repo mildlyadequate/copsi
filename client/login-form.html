@@ -1,55 +1,70 @@
 <!DOCTYPE html>
 <html style="height:100%;">
+
 <head>
 
     <title>Page Title</title>
 
-    <link type='text/css' rel='stylesheet' href='assets/css/materialize.css'  media='screen,projection'/>
-    <link type='text/css' rel='stylesheet' href='assets/icons/icons.css'  media='screen,projection'/>
+    <link type='text/css' rel='stylesheet' href='assets/css/bulma.css' media='screen,projection' />
+    <link type='text/css' rel='stylesheet' href='assets/icons/icons.css' media='screen,projection' />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.typekit.net/qql4lvx.css">
 
 </head>
 
-<body style="height:100%;">
-    <div  style="height:100%;"class="valign-wrapper">
-    <div class="container blue ">
+<body style="height:100%;font-family: proxima-nova;">
+    <section class="hero is-fullheight is-medium is-primary is-bold">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-centered">
+                    <div class="column is-6">
+                        <div class="card">
+                            <div class="card-content">
+                                <p class="title" style="
+                              color: #4a4a4a;">
+                                    Login mit E-Mail Account
+                                </p>
+                                <p class="subtitle" style="
+                              color: #4a4a4a;">
+                                    Zur Anmeldung benötigen Sie die Anmeldedaten Ihres Accounts für
+                                    den zentralen Anmeldedienst des Rechenzentrums (E-Mail Account).
+                                </p>
 
-            <div class="row">
-                <div class="col l12 m12 s12">
-                    <h3 class="center">Copsi Login</h3>
+                                <div class="field">
+                                    <p class="control has-icons-left has-icons-right">
+                                        <input class="input" type="text" placeholder="example@person.hs-kl.de" id="txtLoginUsername">
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-envelope"></i>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="field">
+                                    <p class="control has-icons-left">
+                                        <input class="input" type="password" placeholder="password" id="txtLoginPassword">
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-lock"></i>
+                                        </span>
+                                        <!-- bei Fehler + input erhält die class is-danger--
+                                        <p class="help is-danger">
+                                            Benutzername oder Passwort sind falsch.
+                                          </p-->
+                                    </p>
+                                </div>
+                                <div class="field  is-grouped is-grouped-right">
+                                    <p class="control">
+                                        <button class="button is-success" onclick="handleLogin()">
+                                            Login
+                                        </button>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col l12 m12 s12 center">
-                    <h6 class="center">Welcome Back!</h6>
-                </div>
-            </div>
-
-            <br>
-
-            <div class="row">
-                <div class="input-field col s6 offset-s3">
-                    <input id="last_name" type="text" class="validate">
-                    <label for="last_name">Username</label>
-                </div>
-            </div>
-
-            <br>
-
-            <div class="row">
-                <div class="input-field col s6 offset-s3">
-                    <input id="password" type="password" class="validate">
-                    <label for="password">Password</label>
-                </div>
-            </div>
-
-            
-            <div class="row">
-                <div class=" col s6 offset-s3">
-                    <a class="waves-effect waves-light btn z-depth-1">Login</a>
-                </div>
-            </div>
-        </div></div>
+        </div>
+    </section>
 
     <script type='text/javascript' src='login-form-script.js'></script>
     <script type='text/javascript' src='assets/js/materialize.js'></script>
