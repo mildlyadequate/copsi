@@ -1,4 +1,4 @@
-function Class(id, name, subjectArea, user, channel) {
+function Server(id, name, subjectArea, user, channel) {
     this.id = id,
     this.name = name,
     this.subjectArea = subjectArea,
@@ -7,5 +7,5 @@ function Class(id, name, subjectArea, user, channel) {
 }
 
 module.exports = {
-    Class : Class
+    Server : Server
 }
