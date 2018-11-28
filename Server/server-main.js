@@ -11,9 +11,16 @@ let usrModule = require('../shared-objects/user-object.js');
 let User = usrModule.User;
 
 let sequenceNumberByClient = new Map();
+let serverList = new Map();
+
+// Server objekte in Liste von Datenbank
+
+serverList.set(0,io.of('/hci'));
+serverList.set(1,io.of('/mediengestaltung'));
+serverList.set(2,io.of('/eis'));
 
 // TEMP DEV VARS
-var userMe = new User('sebid','Sebastian','lstonl','regist','profPic','frnds','srvs');
+var userMe = new User('sebid','Sebastian','27.11.2018','20.11.2014','profPic',['hci','eis']);
 
 console.log('Server running.');
 
@@ -22,6 +29,16 @@ io.on('connection', (socket) => {
     console.log('Client connected '+socket.id);
     // initialize this client's sequence number
     sequenceNumberByClient.set(socket, 1);
+
+    // LOGIN
+    socket.on('user:login', (loginData) => {
+
+        // TODO Prüfen ob Daten korrekt
+        // TODO Alle nötigen Daten des Nutzers sammeln und zurückschicken
+
+        socket.emit('user:logged-in',[userMe]);
+
+    });
 
     // when socket disconnects, remove it from the list:
     socket.on('disconnect', () => {
@@ -35,16 +52,9 @@ io.on('connection', (socket) => {
     });
 });
 
-// Custom Namespace 
-var hci = server.of('/hci');
+for(var i=0;i<serverList.size;i++){
 
-var hci = server.of('/mediengestaltung');
-
-var hci = server.of('/eis');
-
-for(var i=1;i<10;i++){
-
-    hci.on('connection', function(socket){
+    serverList.get(i).on('connection', function(socket){
 
         socket.on('message:send', (msg) => {
             console.log(msg);
@@ -55,12 +65,6 @@ for(var i=1;i<10;i++){
             console.log(msg);
             socket.emit('message:prof:received',[userMe,msg]);
         });
-
-
-
-
-
-
 
         console.log('Client '+socket.id+' connected to HCI.');
     });

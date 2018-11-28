@@ -7,12 +7,18 @@ const{app,BrowserWindow,Menu, ipcMain, dialog} = electron;
 const io = require("socket.io-client");
 const ioClient = io.connect("http://localhost:8000");
 
+// TODO 
+// Serverliste werden mit anfrage vom server bekommen
+
+var hci = io.connect("http://localhost:8000/hci");
+let serverList = new Map();
+
 // Custom Modules
 let msgModule = require('../shared-objects/message-object.js');  
 let Message = msgModule.Message;
 let usrModule = require('../shared-objects/user-object.js');  
 let User = usrModule.User;
-var utils = require('./custom_modules/utils.js');
+var utils = require('./custom-modules/utils.js');
 
 // Window Size
 var currentWidth = 1024;
@@ -58,22 +64,36 @@ app.on('ready', function(){
 // IPC
 
 ipcMain.on('message:all:send',function(e,msg){
-    ioClient.emit('message:datenbanken:send',msg); // everyone gets it but the sender
+    //ioClient.emit('message:datenbanken:send',msg); // everyone gets it but the sender
+    hci.emit('message:send', msg);
 });
 
 // SOCKET IO
 
-ioClient.on('connect', function () { // TIP: you can avoid listening on `connect` and listen on events directly too!
-    
-    utils.test();
-
+// Bei Verbindung
+ioClient.on('connect', function () {
+    // Login
+    ioClient.emit('user:login',['testBenutzer','testPasswort']);
 });
 
-ioClient.on("seq-num", function(e){
-    //console.log(e);
+// Wenn eingeloggt
+ioClient.on("user:logged-in", function(userData){
+    console.log('Logged in');
+    console.log(userData[0].servers);
+
+    for(var i=0;i<userData[0].servers.length;i++){
+        
+        // Verbinde mit jedem Sub-Server aus der Liste und speichere in map
+        var tmpServer = io.connect("http://localhost:8000/"+userData[0].servers[i]);
+        serverList.set(userData[0].servers[i],tmpServer);
+    }
+
+    console.log(serverList);
 });
 
 ioClient.on('message:datenbank:received', (data) => {
     mainWindow.webContents.send('message:received', data);
 });
   
+// FUNCTIONS
+

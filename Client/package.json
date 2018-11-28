@@ -1,18 +1,16 @@
 {
-  "name": "studienprojekt",
-  "productName": "Studienprojekt",
+  "name": "copsi-client",
   "version": "0.1.0",
-  "description": "Eine nice Beschreibung",
-  "main": "main-secure.js",
+  "description": "Collaboration App",
+  "main": "main.js",
   "scripts": {
-    "package-win": "electron-packager . spotify-lyrics --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/app-icon/win/app.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Spotify Lyrics\"",
     "start": "electron .",
-    "create-installer-win": "node installers/windows/createinstaller.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Sebastian Schuler",
+  "author": "COPSI",
   "license": "MIT",
   "dependencies": {
-    "electron": "^3.0.3",
+    "electron": "^3.0.10",
     "socket.io": "^2.1.1"
   }
 }
