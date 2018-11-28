@@ -1,6 +1,7 @@
-function User (id, nickname, lastOnline, registered, profilePicture, servers) {
+function User (id, username, password, lastOnline, registered, profilePicture, servers) {
     this.id = id,
-    this.nickname = nickname,  
+    this.username = username,  
+    this.password = password,  
     this.lastOnline = lastOnline,
     this.registered = registered,
     this.profilePicture = profilePicture,

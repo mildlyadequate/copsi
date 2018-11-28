@@ -73,7 +73,7 @@ ipcMain.on('message:all:send',function(e,msg){
 // Bei Verbindung
 ioClient.on('connect', function () {
     // Login
-    ioClient.emit('user:login',['testBenutzer','testPasswort']);
+    ioClient.emit('user:login',['Sebastian','seb23']);
 });
 
 // Wenn eingeloggt
