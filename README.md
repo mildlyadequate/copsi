@@ -1,2 +1,2 @@
-# studienprojekt
+# Copsi
 collaboration application
