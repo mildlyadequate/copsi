@@ -26,8 +26,8 @@ const url = "mongodb://localhost:27017/"+dbName;
 let users = [];
 let servers = [];
 
-let user1 = new User(shortid.generate(),'sesc0043','Sebastian',undefined,'27.11.2018','20.11.2014','profPic1',['hci','eis']);
-let user2 = new User(shortid.generate(),'phsp0001','Philipp',undefined,'23.11.2018','10.11.2014','profPic2',['hci','medges']);
+let user1 = new User(shortid.generate(),'sesc0043','Sebastian',undefined,'27.11.2018','20.11.2014','profPic1',[]);
+let user2 = new User(shortid.generate(),'phsp0001','Philipp',undefined,'23.11.2018','10.11.2014','profPic2',[]);
 users.push(user1);
 users.push(user2);
 
@@ -56,6 +56,11 @@ let user2Server = {user:users[1].id,role:roleStud.id};
 // Server Objekte - id, shortname, name, subjectArea, user, channel
 let server1 = new Server(shortid.generate(),'EIS','Entwicklung Interaktiver Systeme','IMST',[user1Server],[channel1],[roleProf,roleStud]);
 let server2 = new Server(shortid.generate(),'MGS','Mediengestaltung','IMST',[user1Server,user2Server],[channel2],[roleProf,roleStud]);
+
+// Server IDs zu users hinzufügen
+users[0].servers.push(server1.id);
+users[0].servers.push(server2.id);
+users[1].servers.push(server2.id);
 
 // Zu Array hinzufügen
 servers.push(server1);

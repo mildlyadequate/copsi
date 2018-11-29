@@ -21,8 +21,11 @@ const User = usrModule.User;
 const utils = require('./custom-modules/utils.js');
 
 // Window Size
-let currentWidth = 1024;
-let currentHeight = 640;
+let currentWidth = 1220;
+let currentHeight = 630;
+
+// Window
+let mainWindow;
 
 // Listen for app to be ready
 app.on('ready', function(){
@@ -88,11 +91,27 @@ ioClient.on("user:logged-in", function(userData){
     }
 
     console.log(serverList);
+    switchScreenToOverview();
 });
 
-ioClient.on('message:datenbank:received', (data) => {
+ioClient.on('user:wrong-login:username', () => {
+    mainWindow.webContents.send('message:received');
+});
+
+ioClient.on('user:wrong-login:duplicate', () => {
+    mainWindow.webContents.send('message:received');
+});
+
+ioClient.on('user:wrong-login:password', () => {
     mainWindow.webContents.send('message:received', data);
 });
   
 // FUNCTIONS
 
+function switchScreenToOverview() {
+    mainWindow.loadURL(url.format({
+        pathname: path.join(__dirname, 'start-overview.html'),
+        protocol:'file:',
+        slashes: true
+    }));
+}
