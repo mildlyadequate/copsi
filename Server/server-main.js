@@ -28,16 +28,12 @@ mongo.connect('mongodb://127.0.0.1/copsi', function(err, db){
     
     // Lade Copsi DB
     const copsiDB = db.db("copsi");
-
-    // Lade Server Tabelle
-    /*copsiDB.collection("users").find({}).toArray(function(err, result) {
-      if (err) throw err;
-      console.log(result);
-      db.close();
-    });*/
     console.log("DB connected");
 
-    // event fired every time a new client connects:
+    // Lade alle Server
+    updateServerList(copsiDB);
+
+    // Event für jeden neu verbundenen Client
     io.on('connection', (socket) => {
         console.log('Client connected '+socket.id);
 
@@ -61,6 +57,7 @@ mongo.connect('mongodb://127.0.0.1/copsi', function(err, db){
                     // Check Passwort mit bcrypt
                     if(bcrypt.compareSync(loginData[1], result[0].password)){
                         socket.emit('user:logged-in',[result[0]]);
+                        userList.set(result[0].id, {socket:socket,user:result[0]});
                     }else{
                         socket.emit('user:wrong-login:password');
                     }
@@ -71,6 +68,7 @@ mongo.connect('mongodb://127.0.0.1/copsi', function(err, db){
         // when socket disconnects, remove it from the list:
         socket.on('disconnect', () => {
             console.log('Client gone: '+socket.id);
+            // TODO user von liste/map entfernen wenn disconnected
         });
 
         socket.on('message:hci:send', (msg) => {
@@ -98,3 +96,13 @@ mongo.connect('mongodb://127.0.0.1/copsi', function(err, db){
 
     }
 });
+
+function updateServerList(copsiDB){
+    copsiDB.collection("servers").find({}).toArray(function(err, result) {
+        if (err) throw err;
+
+        for(var i=0;i<result.length;i++){
+            serverList.set(result[i].id,[result[i],io.of('/'+result[i].id)]);
+        }
+    });
+}
