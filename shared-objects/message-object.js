@@ -1,4 +1,6 @@
-function Message (id, type, sent, content, sender) {
+//TODO idk lol
+
+function Message (id, type, timestamp, content, sender) {
     this.id = id,
     this.type = type,  
     /*      
@@ -6,7 +8,7 @@ function Message (id, type, sent, content, sender) {
         1 - image
         2 - video 
     */
-    this.sent = sent,
+    this.timestamp = timestamp,
     this.content = content,
     this.sender = sender+
     kurs

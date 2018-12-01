@@ -1,3 +1,4 @@
+// Electron
 const electron = require('electron');
 const url = require('url');
 const path = require('path');
@@ -6,11 +7,7 @@ const{app,BrowserWindow,Menu, ipcMain, dialog} = electron;
 // SocketIO
 const io = require("socket.io-client");
 const ioClient = io.connect("http://localhost:8000");
-
-// TODO 
-// Serverliste werden mit anfrage vom server bekommen
-
-const hci = io.connect("http://localhost:8000/hci");
+// TODO zu speicherendes Server Objekt anpassen
 let serverList = new Map();
 
 // Custom Modules
@@ -20,35 +17,40 @@ const usrModule = require('../shared-objects/user-object.js');
 const User = usrModule.User;
 const utils = require('./custom-modules/utils.js');
 
-// Window Size
+// Main Fenster
+let mainWindow;
+// Main Fenster Größe
 let currentWidth = 1220;
 let currentHeight = 630;
 
-// Window
-let mainWindow;
+/*
+//////////////////////////// Electron App Main ////////////////////////////////////////
+*/
 
-// Listen for app to be ready
 app.on('ready', function(){
 
+    // Applikations Fenster
     mainWindow = new BrowserWindow({
         width: currentWidth, 
         height: currentHeight,
         backgroundColor:'#fff',
         show: false,
-        title:'Studienprojekt'
+        title:'Copsi'
     });
 
+    // Ready to show verhindert 'weißes aufblinken' wie man es vom browser kennt
     mainWindow.once('ready-to-show', ()=>{
         mainWindow.show();
     });
 
+    // Lade Login Form zuerst
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'login-form.html'),
         protocol:'file:',
         slashes: true
     }));
 
-    // Send current height on resize to adjust components
+    // Sende aktuelle Höhe an Html
     mainWindow.on('resize', function(e){
         var height = mainWindow.getSize()[1];
         if(currentHeight != height){
@@ -57,31 +59,31 @@ app.on('ready', function(){
         }
     })
 
-    // Quit App when closed
+    // Wenn Applikation geschlossen wird
     mainWindow.on('closed', function(){
         app.quit();
     })
-
 });
 
-// IPC
+/*
+//////////////////////////// IPC MAIN ////////////////////////////////////////
+*/
 
 ipcMain.on('user:login',function(e,loginData){
     ioClient.emit('user:login',[loginData[0],loginData[1]]);
 });
 
-// SOCKET IO
+/*
+//////////////////////////// SOCKET.IO EVENTS ////////////////////////////////////////
+*/
 
 // Bei Verbindung
 ioClient.on('connect', function () {
-    // Login
-    
 });
 
 // Wenn eingeloggt
 ioClient.on("user:logged-in", function(userData){
     console.log('Logged in');
-    console.log(userData[0].servers);
 
     for(var i=0;i<userData[0].servers.length;i++){
         
@@ -90,27 +92,29 @@ ioClient.on("user:logged-in", function(userData){
         serverList.set(userData[0].servers[i],tmpServer);
     }
 
-    console.log(serverList);
-    switchScreenToOverview();
+    switchScreen('start-overview.html');
 });
 
+// Leite falsche Loginversuch Events weiter an Html
 ioClient.on('user:wrong-login:username', () => {
-    mainWindow.webContents.send('message:received');
+    mainWindow.webContents.send('user:wrong-login:username');
 });
 
 ioClient.on('user:wrong-login:duplicate', () => {
-    mainWindow.webContents.send('message:received');
+    mainWindow.webContents.send('user:wrong-login:duplicate');
 });
 
 ioClient.on('user:wrong-login:password', () => {
-    mainWindow.webContents.send('message:received', data);
+    mainWindow.webContents.send('user:wrong-login:password');
 });
   
-// FUNCTIONS
+/*
+//////////////////////////// FUNCTIONS ////////////////////////////////////////
+*/
 
-function switchScreenToOverview() {
+function switchScreen(screenHtml) {
     mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'start-overview.html'),
+        pathname: path.join(__dirname, screenHtml),
         protocol:'file:',
         slashes: true
     }));

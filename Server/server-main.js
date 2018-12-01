@@ -1,29 +1,29 @@
-const app = require('express')();
-const server = require('http').Server(app);
-const io = require('socket.io')(server);
-const mongo = require('mongodb');
-const bcrypt = require('bcryptjs');
-
-server.listen(8000);
-
 // Custom Modules
 const msgModule = require('../shared-objects/message-object.js');  
 const Message = msgModule.Message;
 const usrModule = require('../shared-objects/user-object.js');  
 const User = usrModule.User;
 
+// Server
+const app = require('express')();
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+// Datenbank
+const mongo = require('mongodb');
+// Daten verschlüsselung
+const bcrypt = require('bcryptjs');
+
+// Listen auf Port
+server.listen(8000);
+console.log('Server running.');
+
+// Datenbank Daten Maps
 let userList = new Map();
 let serverList = new Map();
 
-// Server objekte in Liste von Datenbank
-serverList.set(0,io.of('/hci'));
-serverList.set(1,io.of('/medges'));
-serverList.set(2,io.of('/eis'));
-
-console.log('Server running.');
-
 // Verbinde DB
-mongo.connect('mongodb://127.0.0.1/copsi', function(err, db){
+mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err, db){
+    // TODO Handle Error
     if (err) throw err;
     
     // Lade Copsi DB
@@ -37,7 +37,7 @@ mongo.connect('mongodb://127.0.0.1/copsi', function(err, db){
     io.on('connection', (socket) => {
         console.log('Client connected '+socket.id);
 
-        // LOGIN
+        // Login Event
         socket.on('user:login', (loginData) => {
 
             // TODO Prüfen ob Daten korrekt
@@ -46,6 +46,7 @@ mongo.connect('mongodb://127.0.0.1/copsi', function(err, db){
             // Bestimmten Benutzer aus Datenbank laden
             let query = { username: loginData[0] };
             copsiDB.collection("users").find(query).toArray(function(err, result) {
+                // TODO Handle Error
                 if (err) throw err;
 
                 // Check ob es genau einen user mit dem gegebenen usernamen gibt
@@ -56,8 +57,11 @@ mongo.connect('mongodb://127.0.0.1/copsi', function(err, db){
                 }else{
                     // Check Passwort mit bcrypt
                     if(bcrypt.compareSync(loginData[1], result[0].password)){
+                        // Sende Daten an Client
                         socket.emit('user:logged-in',[result[0]]);
+                        // User der Map hinzufügen
                         userList.set(result[0].id, {socket:socket,user:result[0]});
+                        console.log('Client logged in: '+result[0].username);
                     }else{
                         socket.emit('user:wrong-login:password');
                     }
@@ -65,7 +69,7 @@ mongo.connect('mongodb://127.0.0.1/copsi', function(err, db){
             });
         });
 
-        // when socket disconnects, remove it from the list:
+        // Wenn ein Client die Verbindung trennt
         socket.on('disconnect', () => {
             console.log('Client gone: '+socket.id);
             // TODO user von liste/map entfernen wenn disconnected
@@ -77,6 +81,8 @@ mongo.connect('mongodb://127.0.0.1/copsi', function(err, db){
         });
     });
 
+    // Erstelle Events für jeden Server der Servermap
+    // TODO Listener aus Server Objekt erstellen
     for(var i=0;i<serverList.size;i++){
 
         serverList.get(i).on('connection', function(socket){
@@ -93,15 +99,17 @@ mongo.connect('mongodb://127.0.0.1/copsi', function(err, db){
 
             console.log('Client '+socket.id+' connected to HCI.');
         });
-
     }
 });
 
+// Lade aktuelle Serverliste von der Datenbank
 function updateServerList(copsiDB){
     copsiDB.collection("servers").find({}).toArray(function(err, result) {
+        // TODO Handle Error
         if (err) throw err;
 
         for(var i=0;i<result.length;i++){
+            // Serverlist Objekt = key: serverId, value: [serverObjekt,namespaceObjekt]
             serverList.set(result[i].id,[result[i],io.of('/'+result[i].id)]);
         }
     });

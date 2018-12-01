@@ -3,7 +3,7 @@
 
 <head>
 
-    <title>Page Title</title>
+    <title>Copsi</title>
 
     <link type='text/css' rel='stylesheet' href='assets/css/bulma.css' media='screen,projection' />
     <link type='text/css' rel='stylesheet' href='assets/icons/icons.css' media='screen,projection' />
@@ -30,27 +30,31 @@
                                     Zur Anmeldung benötigen Sie die Anmeldedaten Ihres Accounts für
                                     den zentralen Anmeldedienst des Rechenzentrums (E-Mail Account).
                                 </p>
-
+                                <!-- INPUT USERNAME -->
                                 <div class="field">
-                                    <p class="control has-icons-left has-icons-right">
-                                        <input class="input" type="text" placeholder="example@person.hs-kl.de" id="txtLoginUsername">
+                                    <p id="controlUsername" class="control has-icons-left has-icons-right">
+                                        <input id="tfUsername" class="input" type="text" placeholder="student0011">
                                         <span class="icon is-small is-left">
                                             <i class="fas fa-envelope"></i>
                                         </span>
                                     </p>
                                 </div>
+
+                                <!-- INPUT PASSWORD -->
                                 <div class="field">
-                                    <p class="control has-icons-left">
-                                        <input class="input" type="password" placeholder="password" id="txtLoginPassword">
+                                    <p id="controlPassword" class="control has-icons-left">
+                                        <input id="tfPassword" class="input" type="password" placeholder="password">
                                         <span class="icon is-small is-left">
                                             <i class="fas fa-lock"></i>
                                         </span>
-                                        <!-- bei Fehler + input erhält die class is-danger--
+                                        <!-- bei Fehler + input erhält die class is-danger
                                         <p class="help is-danger">
                                             Benutzername oder Passwort sind falsch.
-                                          </p-->
+                                        </p>-->
                                     </p>
                                 </div>
+
+                                <!-- INPUT LOGIN BUTTON -->
                                 <div class="field  is-grouped is-grouped-right">
                                     <p class="control">
                                         <button class="button is-success" onclick="handleLogin()">

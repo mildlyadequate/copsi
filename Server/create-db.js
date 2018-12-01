@@ -3,15 +3,23 @@ const bcrypt = require('bcryptjs');
 const shortid = require('shortid');
 
 // Eigene Objekte
+// User
 const usrModule = require('../shared-objects/user-object.js');  
 const User = usrModule.User;
+// Server
 const serverModule = require('../shared-objects/server-object.js');  
 const Server = serverModule.Server;
+// Server User Ability
+const ServerUserAbility = serverModule.UserAbility;
+// Channel
 const channelModule = require('../shared-objects/channel-object.js');  
 const Channel = channelModule.Channel;
+// Channel Ability
 const RoleAbility = channelModule.RoleAbility;
+// Role
 const roleModule = require('../shared-objects/role-object.js');  
 const Role = roleModule.Role;
+
 
 // Datenbank
 const dbName = "copsi";
@@ -26,6 +34,7 @@ const url = "mongodb://localhost:27017/"+dbName;
 let users = [];
 let servers = [];
 
+// User
 let user1 = new User(shortid.generate(),'sesc0043','Sebastian',undefined,'27.11.2018','20.11.2014','profPic1',[]);
 let user2 = new User(shortid.generate(),'phsp0001','Philipp',undefined,'23.11.2018','10.11.2014','profPic2',[]);
 users.push(user1);
@@ -53,9 +62,18 @@ let channel2 = new Channel(shortid.generate(),'News',channelModule.type.news,[],
 // User Objekt in server - user,rollenID
 let user1Server = {user:users[0].id,role:roleProf.id};
 let user2Server = {user:users[1].id,role:roleStud.id};
+
+// Server User Ability - admin, moderator, announcement
+let serverUserAbility = new ServerUserAbility([roleProf.id],[roleProf.id],[roleProf.id]);
+
 // Server Objekte - id, shortname, name, subjectArea, user, channel
-let server1 = new Server(shortid.generate(),'EIS','Entwicklung Interaktiver Systeme','IMST',[user1Server],[channel1],[roleProf,roleStud]);
-let server2 = new Server(shortid.generate(),'MGS','Mediengestaltung','IMST',[user1Server,user2Server],[channel2],[roleProf,roleStud]);
+let server1 = new Server(shortid.generate(),'EIS',undefined,'Entwicklung Interaktiver Systeme','IMST',[user1Server],[channel1],[roleProf,roleStud],serverUserAbility);
+let server2 = new Server(shortid.generate(),'MGS',undefined,'Mediengestaltung','IMST',[user1Server,user2Server],[channel2],[roleProf,roleStud],serverUserAbility);
+
+// Server Passwort verschlüsseln und hinzufügen
+bcrypt.hash("eis2018", 10, function(err, hash) {
+  server1.password = hash;
+});
 
 // Server IDs zu users hinzufügen
 users[0].servers.push(server1.id);

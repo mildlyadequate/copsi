@@ -1,0 +1,8 @@
+done: server, server.userAbility, user, channel, roles, 
+TODO: message
+
+
+Server = id, shortname, password, name, subjectArea, OBJ[userID,roleID], [channel], [roles], OBJ[server.userAbility]
+
+User = id, username, nickname, password, lastOnline, registered, profilePicture, [server.id]
+
