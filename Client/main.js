@@ -5,8 +5,9 @@ const path = require('path');
 const{app,BrowserWindow,Menu, ipcMain, dialog} = electron;
 
 // SocketIO
+const ioUrl = "http://localhost:8000";
 const io = require("socket.io-client");
-const ioClient = io.connect("http://localhost:8000");
+const ioClient = io.connect(ioUrl);
 // TODO zu speicherendes Server Objekt anpassen
 let serverList = new Map();
 
@@ -79,6 +80,7 @@ ipcMain.on('user:login',function(e,loginData){
 
 // Bei Verbindung
 ioClient.on('connect', function () {
+    mainWindow.webContents.send('server:connected');
 });
 
 // Wenn eingeloggt
@@ -88,7 +90,7 @@ ioClient.on("user:logged-in", function(userData){
     for(var i=0;i<userData[0].servers.length;i++){
         
         // Verbinde mit jedem Sub-Server aus der Liste und speichere in map
-        var tmpServer = io.connect("http://localhost:8000/"+userData[0].servers[i]);
+        var tmpServer = io.connect(ioUrl+userData[0].servers[i]);
         serverList.set(userData[0].servers[i],tmpServer);
     }
 
@@ -112,6 +114,7 @@ ioClient.on('user:wrong-login:password', () => {
 //////////////////////////// FUNCTIONS ////////////////////////////////////////
 */
 
+// Wechsel aktives Html zum startscreen
 function switchScreen(screenHtml) {
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, screenHtml),

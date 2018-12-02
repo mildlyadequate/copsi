@@ -14,6 +14,18 @@ var ctPassword = document.getElementById('controlPassword');
 */
 
 function handleLogin() {
+
+    // Check Login Daten
+    if(tfUsername.value.length <= 0){
+        addErrorMsg('Bitte geben sie einen Benutzername ein.',0);
+    }
+
+    // Check Login Daten
+    if(tfPassword.value.length <= 0){
+        addErrorMsg('Bitte geben sie das Passwort ein.',0);
+    }
+
+    // Sende Login Daten zur App
     ipcRenderer.send('user:login',[tfUsername.value, tfPassword.value]);
 }
 

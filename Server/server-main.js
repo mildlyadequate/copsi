@@ -21,6 +21,8 @@ console.log('Server running.');
 let userList = new Map();
 let serverList = new Map();
 
+// TODO Check ASYNC DB Anfragen
+
 // Verbinde DB
 mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err, db){
     // TODO Handle Error
@@ -59,9 +61,13 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
                     if(bcrypt.compareSync(loginData[1], result[0].password)){
                         // Sende Daten an Client
                         socket.emit('user:logged-in',[result[0]]);
+
+                        createUserInfo(copsiDB,result[0]);
+
                         // User der Map hinzufügen
                         userList.set(result[0].id, {socket:socket,user:result[0]});
                         console.log('Client logged in: '+result[0].username);
+                       // getServerUserList();
                     }else{
                         socket.emit('user:wrong-login:password');
                     }
@@ -108,9 +114,39 @@ function updateServerList(copsiDB){
         // TODO Handle Error
         if (err) throw err;
 
+        // TODO check ob server schon in der liste / ersetzen
         for(var i=0;i<result.length;i++){
             // Serverlist Objekt = key: serverId, value: [serverObjekt,namespaceObjekt]
             serverList.set(result[i].id,[result[i],io.of('/'+result[i].id)]);
         }
     });
+}
+
+// Erstellt Paket von Informationen für einen individuellen Benutzer
+function createUserInfo(copsiDB,user){
+    copsiDB.collection("servers").find({}).toArray(function(err, result) {
+        // TODO Handle Error
+        if (err) throw err;
+
+        // TODO check ob server schon in der liste / ersetzen
+        for(var i=0;i<result.length;i++){
+
+            // TODO gibt es array.contains?
+            for(var j=0;j<user.servers.length;j++){
+                if(user.servers[j]==result[i].id){
+                    console.log(result[i].name);
+                }
+            }
+            serverList.set(result[i].id,[result[i],io.of('/'+result[i].id)]);
+        }
+    });
+}
+
+// Gibt eine Liste aller User auf einem Server zurück, ohne persönliche Daten (Pw)
+function getServerUserList(){
+    // TODO Schleife durch userliste um server attribut zu checken
+    console.log(userList);
+    for(var i;i<userList.length;i++){
+        console.log(userList[i]);
+    }
 }
