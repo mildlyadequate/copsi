@@ -2,12 +2,33 @@
 const electron = require('electron');
 const {ipcRenderer,shell,Menu} = electron;
 
-
+var divServerUserList = document.getElementById('divServerUserList');
 
 // IPC 
 
+ipcRenderer.on('user:personal-user-info',function(e,serverData){
+
+
+
+});
 
 // FUNCTIONS
+
+function makeServerUserList(){
+  
+  // Für Jede Rolle ein Abteil
+  for(){
+
+    // P Element mit Rollen Name
+
+    // User Liste in der ROlle
+    for(){
+
+    }
+
+  }
+
+}
 
 function createMessage(msg, user){
 

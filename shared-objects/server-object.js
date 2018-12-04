@@ -12,6 +12,9 @@ function Server(id, shortName, password, name, subjectArea, user, channel, roles
     this.userAbility = userAbility
 }
 
+// TODO Speichere User als [user,rolle]
+// TODO UserAbility soll Rollen -> Funktionen zuweisen zB Server Details Bearbeiten : Admin usw
+
 // UserAbility Objekt
 // admin:array, moderator:array, announcement:array
 function UserAbility(admin,moderator,announcement) {

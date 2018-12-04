@@ -81,20 +81,32 @@ ipcMain.on('user:login',function(e,loginData){
 // Bei Verbindung
 ioClient.on('connect', function () {
     mainWindow.webContents.send('server:connected');
+
+    //TODO Dev / Remove
+    ioClient.emit('user:login',['sesc0043','seb123']);
 });
 
 // Wenn eingeloggt
 ioClient.on("user:logged-in", function(userData){
     console.log('Logged in');
 
-    for(var i=0;i<userData[0].servers.length;i++){
-        
-        // Verbinde mit jedem Sub-Server aus der Liste und speichere in map
-        var tmpServer = io.connect(ioUrl+userData[0].servers[i]);
-        serverList.set(userData[0].servers[i],tmpServer);
-    }
+    // TODO Use userdata
 
     switchScreen('start-overview.html');
+});
+
+// Wird dem User nach einloggen geschickt, enthält Informationen über Server 
+ioClient.on("user:personal-user-info", function(serverData){
+
+    for(var i=0;i<serverData.length;i++){
+        
+        // Verbinde mit jedem Sub-Server aus der Liste und speichere in map
+        var tmpServer = io.connect(ioUrl+'/'+serverData[i].id);
+        serverList.set(serverData[i].id,[tmpServer,serverData[i]]);
+    }
+
+    mainWindow.webContents.send('user:personal-user-info',serverList);
+
 });
 
 // Leite falsche Loginversuch Events weiter an Html

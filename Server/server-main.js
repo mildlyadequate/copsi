@@ -42,7 +42,6 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
         // Login Event
         socket.on('user:login', (loginData) => {
 
-            // TODO Prüfen ob Daten korrekt
             // TODO Alle nötigen Daten des Nutzers sammeln und zurückschicken
 
             // Bestimmten Benutzer aus Datenbank laden
@@ -62,11 +61,14 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
                         // Sende Daten an Client
                         socket.emit('user:logged-in',[result[0]]);
 
-                        createUserInfo(copsiDB,result[0]);
+                        // 
+                        sendUserServerInfo(copsiDB,result[0],socket);
+                        console.log("lol");
 
                         // User der Map hinzufügen
                         userList.set(result[0].id, {socket:socket,user:result[0]});
                         console.log('Client logged in: '+result[0].username);
+
                        // getServerUserList();
                     }else{
                         socket.emit('user:wrong-login:password');
@@ -109,24 +111,31 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
 });
 
 // Lade aktuelle Serverliste von der Datenbank
-function updateServerList(copsiDB){
+ function updateServerList(copsiDB){
     copsiDB.collection("servers").find({}).toArray(function(err, result) {
         // TODO Handle Error
         if (err) throw err;
 
-        // TODO check ob server schon in der liste / ersetzen
+        // Für alle Server aus result Objekt
         for(var i=0;i<result.length;i++){
-            // Serverlist Objekt = key: serverId, value: [serverObjekt,namespaceObjekt]
-            serverList.set(result[i].id,[result[i],io.of('/'+result[i].id)]);
+
+            // Wenn Server noch nicht in Map vorhanden ist
+            if(!serverList.has(result[i].id)){
+                // Serverlist Objekt = key: serverId, value: [serverObjekt,namespaceObjekt]
+                serverList.set(result[i].id,[result[i],io.of('/'+result[i].id)]);
+            }
+
         }
     });
 }
 
 // Erstellt Paket von Informationen für einen individuellen Benutzer
-function createUserInfo(copsiDB,user){
+function sendUserServerInfo(copsiDB,user,socket){
     copsiDB.collection("servers").find({}).toArray(function(err, result) {
         // TODO Handle Error
         if (err) throw err;
+
+        var tmpUserServerList = [];
 
         // TODO check ob server schon in der liste / ersetzen
         for(var i=0;i<result.length;i++){
@@ -134,11 +143,15 @@ function createUserInfo(copsiDB,user){
             // TODO gibt es array.contains?
             for(var j=0;j<user.servers.length;j++){
                 if(user.servers[j]==result[i].id){
-                    console.log(result[i].name);
+
+                    var serverObject = result[i];
+                    // Sensitive Daten von Objekt löschen bevor es gesendet wird
+                    delete serverObject.password;
+                    tmpUserServerList.push(serverObject);
                 }
             }
-            serverList.set(result[i].id,[result[i],io.of('/'+result[i].id)]);
         }
+        socket.emit('user:personal-user-info',tmpUserServerList);
     });
 }
 
