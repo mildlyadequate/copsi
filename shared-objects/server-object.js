@@ -1,12 +1,11 @@
 // Server Objekt
 // id:shortid, shortName:string, name:string, subjectArea:string, user:array:userid, channel:array:userid, roles:roleobjects
-function Server(id, shortName, password, name, subjectArea, user, channel, roles, userAbility) {
+function Server(id, shortName, password, name, subjectArea, channel, roles, userAbility) {
     this.id = id,
     this.shortName = shortName,
     this.password = password,
     this.name = name,
     this.subjectArea = subjectArea,
-    this.user = user,
     this.channel = channel,
     this.roles = roles,
     this.userAbility = userAbility

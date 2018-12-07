@@ -33,6 +33,10 @@ function handleLogin() {
 //////////////////////////// IPC Renderer ////////////////////////////////////////
 */
 
+ipcRenderer.on('server:connected',function(e){
+    console.log('connected');
+});
+
 ipcRenderer.on('user:wrong-login:username',function(e,msg){
     addErrorMsg('Der eingegebene Benutzername existiert nicht.',0);
 });

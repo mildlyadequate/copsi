@@ -20,8 +20,13 @@ console.log('Server running.');
 // Datenbank Daten Maps
 let userList = new Map();
 let serverList = new Map();
+let surList = [];
 
 // TODO Check ASYNC DB Anfragen
+
+/*
+//////////////////////////// Connect ////////////////////////////////////////
+*/
 
 // Verbinde DB
 mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err, db){
@@ -34,6 +39,7 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
 
     // Lade alle Server
     updateServerList(copsiDB);
+    updateSurList(copsiDB);
 
     // Event für jeden neu verbundenen Client
     io.on('connection', (socket) => {
@@ -59,17 +65,16 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
                     // Check Passwort mit bcrypt
                     if(bcrypt.compareSync(loginData[1], result[0].password)){
                         // Sende Daten an Client
-                        socket.emit('user:logged-in',[result[0]]);
+                        //socket.emit('user:logged-in',[result[0]]);
 
-                        // 
+                        // Sende Daten an Client
                         sendUserServerInfo(copsiDB,result[0],socket);
-                        console.log("lol");
 
                         // User der Map hinzufügen
                         userList.set(result[0].id, {socket:socket,user:result[0]});
                         console.log('Client logged in: '+result[0].username);
 
-                       // getServerUserList();
+                       // TODO getServerUserList();
                     }else{
                         socket.emit('user:wrong-login:password');
                     }
@@ -110,8 +115,13 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
     }
 });
 
+/*
+//////////////////////////// Datenbank Funktionen ////////////////////////////////////////
+*/
+
 // Lade aktuelle Serverliste von der Datenbank
- function updateServerList(copsiDB){
+// Wird beim Server start einmal ausgeführt, ab dann nur noch geupdated
+function updateServerList(copsiDB){
     copsiDB.collection("servers").find({}).toArray(function(err, result) {
         // TODO Handle Error
         if (err) throw err;
@@ -129,29 +139,57 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
     });
 }
 
+// Lade aktuelle SurListe von der Datenbank
+// Wird beim Server start einmal ausgeführt, ab dann nur noch geupdated
+function updateSurList(copsiDB){
+    copsiDB.collection("sur").find({}).toArray(function(err, result) {
+        // TODO Handle Error
+        if (err) throw err;
+
+        for(var i=0;i<result.length;i++){
+            surList.push(result[i]);
+        }
+    });
+}
+
 // Erstellt Paket von Informationen für einen individuellen Benutzer
 function sendUserServerInfo(copsiDB,user,socket){
     copsiDB.collection("servers").find({}).toArray(function(err, result) {
         // TODO Handle Error
         if (err) throw err;
-
+    
         var tmpUserServerList = [];
 
-        // TODO check ob server schon in der liste / ersetzen
+        // Server
         for(var i=0;i<result.length;i++){
 
-            // TODO gibt es array.contains?
-            for(var j=0;j<user.servers.length;j++){
-                if(user.servers[j]==result[i].id){
+            var serverObject = result[i];
+            // Sensitive Daten von Objekt löschen bevor es gesendet wird
+            delete serverObject.password;
+            serverObject['users'] = [];
 
-                    var serverObject = result[i];
-                    // Sensitive Daten von Objekt löschen bevor es gesendet wird
-                    delete serverObject.password;
+            // Sur
+            for(var j=0;j<surList.length;j++){
+
+
+
+                if(surList[j].userid === user.id && surList[j].serverid===result[i].id){
+                    var tmpUser = userList.get(user.id).user;
+                    delete tmpUser.password;
+                    serverObject.users.push(tmpUser);
                     tmpUserServerList.push(serverObject);
                 }
             }
+
         }
-        socket.emit('user:personal-user-info',tmpUserServerList);
+
+        // TODO Mit Sur Liste ein users objekt in das tmp server objekt einfügen das komplette benutzer ausgenommen pw usw enthält
+        
+        // passwort wird nicht benötigt
+        delete user.password;
+
+        // TODO im user objekt sollte der komplette user mitgesendet werden anstatt nur der ID
+        socket.emit('user:logged-in:personal-info',[user,tmpUserServerList]);
     });
 }
 
@@ -163,3 +201,7 @@ function getServerUserList(){
         console.log(userList[i]);
     }
 }
+
+/*
+//////////////////////////// Funktionen ////////////////////////////////////////
+*/

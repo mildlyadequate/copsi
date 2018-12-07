@@ -20,9 +20,12 @@ const utils = require('./custom-modules/utils.js');
 
 // Main Fenster
 let mainWindow;
+let loginWindow;
+
 // Main Fenster Größe
 let currentWidth = 1220;
 let currentHeight = 630;
+
 
 /*
 //////////////////////////// Electron App Main ////////////////////////////////////////
@@ -30,8 +33,61 @@ let currentHeight = 630;
 
 app.on('ready', function(){
 
+    require('devtron').install();
+
+    // ----- LOGIN WINDOW -----
+
+    loginWindow = createLoginWindow();
+
+    // Ready to show verhindert 'weißes aufblinken' wie man es vom browser kennt
+    loginWindow.once('ready-to-show', ()=>{
+        //loginWindow.show();
+    });
+
+    // Wenn Applikation geschlossen wird
+    loginWindow.on('closed', function(){
+    });
+
+    // ----- MAIN WINDOW -----
+
     // Applikations Fenster
-    mainWindow = new BrowserWindow({
+    mainWindow = createMainWindow();
+
+    // Ready to show verhindert 'weißes aufblinken' wie man es vom browser kennt
+    mainWindow.once('ready-to-show', ()=>{
+       mainWindow.show();
+       mainWindow.webContents.openDevTools();
+    });
+
+    // Wenn Applikation geschlossen wird
+    mainWindow.on('closed', function(){
+        app.quit();
+    });
+});
+
+function createLoginWindow(){
+
+    var wndw = new BrowserWindow({
+        width: currentWidth, 
+        height: currentHeight,
+        backgroundColor:'#fff',
+        show: false,
+        title:'Copsi Login'
+    });
+
+    // Lade Login Form zuerst
+    wndw.loadURL(url.format({
+        pathname: path.join(__dirname, 'login-form.html'),
+        protocol:'file:',
+        slashes: true
+    }));
+
+    return wndw;
+}
+
+function createMainWindow(){
+
+    var wndw = new BrowserWindow({
         width: currentWidth, 
         height: currentHeight,
         backgroundColor:'#fff',
@@ -39,32 +95,15 @@ app.on('ready', function(){
         title:'Copsi'
     });
 
-    // Ready to show verhindert 'weißes aufblinken' wie man es vom browser kennt
-    mainWindow.once('ready-to-show', ()=>{
-        mainWindow.show();
-    });
-
     // Lade Login Form zuerst
-    mainWindow.loadURL(url.format({
+    wndw.loadURL(url.format({
         pathname: path.join(__dirname, 'login-form.html'),
         protocol:'file:',
         slashes: true
     }));
 
-    // Sende aktuelle Höhe an Html
-    mainWindow.on('resize', function(e){
-        var height = mainWindow.getSize()[1];
-        if(currentHeight != height){
-            currentHeight = height;
-            mainWindow.webContents.send('window:resize', height);
-        }
-    })
-
-    // Wenn Applikation geschlossen wird
-    mainWindow.on('closed', function(){
-        app.quit();
-    })
-});
+    return wndw;
+}
 
 /*
 //////////////////////////// IPC MAIN ////////////////////////////////////////
@@ -87,17 +126,14 @@ ioClient.on('connect', function () {
 });
 
 // Wenn eingeloggt
-ioClient.on("user:logged-in", function(userData){
+ioClient.on("user:logged-in:personal-info", function(userData){
+
+    var user = userData[0];
+    var serverData = userData[1];
+
     console.log('Logged in');
 
-    // TODO Use userdata
-
-    switchScreen('start-overview.html');
-});
-
-// Wird dem User nach einloggen geschickt, enthält Informationen über Server 
-ioClient.on("user:personal-user-info", function(serverData){
-
+    // Iteration durch alle Server dieses Users
     for(var i=0;i<serverData.length;i++){
         
         // Verbinde mit jedem Sub-Server aus der Liste und speichere in map
@@ -105,8 +141,18 @@ ioClient.on("user:personal-user-info", function(serverData){
         serverList.set(serverData[i].id,[tmpServer,serverData[i]]);
     }
 
-    mainWindow.webContents.send('user:personal-user-info',serverList);
+    // TODO Use userdata
 
+    // TODO kombiniere beide in die gleiche function / in das gleiche 
+
+    //mainWindow.show();
+    //loginWindow.close();
+    switchScreen('start-overview.html');
+
+    // Sende ServerDaten via ipc wenn Fenster fertig geladen hat
+    mainWindow.webContents.on('did-finish-load', function() {
+        mainWindow.webContents.send('user:personal-user-info',serverData);
+    });
 });
 
 // Leite falsche Loginversuch Events weiter an Html

@@ -19,7 +19,9 @@ const RoleAbility = channelModule.RoleAbility;
 // Role
 const roleModule = require('../shared-objects/role-object.js');  
 const Role = roleModule.Role;
-
+// Server User Role Kombo Objekt
+const surModule = require('../shared-objects/server-user-role-object.js');  
+const Sur = surModule.Sur;
 
 // Datenbank
 const dbName = "copsi";
@@ -33,12 +35,15 @@ const url = "mongodb://localhost:27017/"+dbName;
 // Daten Arrays
 let users = [];
 let servers = [];
+let surObjekte = [];
 
 // User
-let user1 = new User(shortid.generate(),'sesc0043','Sebastian',undefined,'27.11.2018','20.11.2014','profPic1',[]);
-let user2 = new User(shortid.generate(),'phsp0001','Philipp',undefined,'23.11.2018','10.11.2014','profPic2',[]);
+let user1 = new User(shortid.generate(),'sesc0043','Sebastian Schuler',undefined,'27.11.2018','20.11.2014','profPic1');
+let user2 = new User(shortid.generate(),'phsp0001','Philipp Spandl',undefined,'23.11.2018','10.11.2015','profPic2');
+let user3 = new User(shortid.generate(),'diwa0015','Dieter Wallach',undefined,'29.11.2018','10.11.2013','profPic3');
 users.push(user1);
 users.push(user2);
+users.push(user3);
 
 // User Passwort verschlüsseln und hinzufügen
 bcrypt.hash("seb123", 10, function(err, hash) {
@@ -59,30 +64,40 @@ let rfChannel1 = new RoleAbility([roleProf.id,roleStud.id],[roleProf.id],[rolePr
 let channel1 = new Channel(shortid.generate(),'Allgemein',channelModule.type.chat,[],rfChannel1);
 let channel2 = new Channel(shortid.generate(),'News',channelModule.type.news,[],rfChannel1);
 
-// User Objekt in server - user,rollenID
-let user1Server = {user:users[0].id,role:roleProf.id};
-let user2Server = {user:users[1].id,role:roleStud.id};
-
 // Server User Ability - admin, moderator, announcement
 let serverUserAbility = new ServerUserAbility([roleProf.id],[roleProf.id],[roleProf.id]);
 
 // Server Objekte - id, shortname, name, subjectArea, user, channel
-let server1 = new Server(shortid.generate(),'EIS',undefined,'Entwicklung Interaktiver Systeme','IMST',[user1Server],[channel1],[roleProf,roleStud],serverUserAbility);
-let server2 = new Server(shortid.generate(),'MGS',undefined,'Mediengestaltung','IMST',[user1Server,user2Server],[channel2],[roleProf,roleStud],serverUserAbility);
+let server1 = new Server(shortid.generate(),'EIS',undefined,'Entwicklung Interaktiver Systeme','IMST',[channel1],[roleProf,roleStud],serverUserAbility);
+let server2 = new Server(shortid.generate(),'MGS',undefined,'Mediengestaltung','IMST',[channel2],[roleProf,roleStud],serverUserAbility);
 
 // Server Passwort verschlüsseln und hinzufügen
 bcrypt.hash("eis2018", 10, function(err, hash) {
   server1.password = hash;
 });
 
-// Server IDs zu users hinzufügen
-users[0].servers.push(server1.id);
-users[0].servers.push(server2.id);
-users[1].servers.push(server2.id);
+// Kombo Objekte
+let sur1 = new Sur(server1.id,user1.id,roleStud.id);
+let sur2 = new Sur(server1.id,user2.id,roleStud.id);
+
+let sur3 = new Sur(server2.id,user1.id,roleStud.id);
+let sur4 = new Sur(server2.id,user2.id,roleStud.id);
+
+let sur5 = new Sur(server1.id,user3.id,roleProf.id);
+let sur6 = new Sur(server2.id,user3.id,roleProf.id);
+
 
 // Zu Array hinzufügen
 servers.push(server1);
 servers.push(server2);
+
+// Sur Objekte zu Array
+surObjekte.push(sur1);
+surObjekte.push(sur2);
+surObjekte.push(sur3);
+surObjekte.push(sur4);
+surObjekte.push(sur5);
+surObjekte.push(sur6);
 
 /*
 //////////////////////////// Create Database ////////////////////////////////////////
@@ -109,6 +124,12 @@ MongoClient.connect(url, function(err, db) {
     dbo.collection("servers").insertMany(servers, function(err, res) {
       if (err) throw err;
       console.log("Number of servers inserted: " + res.insertedCount);
+    });
+
+    // Füge Sur hinzu
+    dbo.collection("sur").insertMany(surObjekte, function(err, res) {
+      if (err) throw err;
+      console.log("Number of surs inserted: " + res.insertedCount);
     });
 
     db.close();

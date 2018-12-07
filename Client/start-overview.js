@@ -2,32 +2,85 @@
 const electron = require('electron');
 const {ipcRenderer,shell,Menu} = electron;
 
-var divServerUserList = document.getElementById('divServerUserList');
+// Server Display Elemente
+const divServerUserList = document.getElementById('divServerUserList');
+
+// Variablen
+let currentSelectedServer = 'D8kjsp8I4r';
 
 // IPC 
 
+
+ipcRenderer.on('server:connected',function(e){
+
+  console.log('connected');
+
+});
+
 ipcRenderer.on('user:personal-user-info',function(e,serverData){
 
+  console.log(serverData);
 
+  currentSelectedServer = serverData[0].id;
+
+  // Gehe durch Server Liste um aktuell selektierten zu finden
+  for(var i=0;i<serverData.length;i++){
+    if(serverData[i].id === currentSelectedServer){
+      makeServerUserList(serverData[i]);
+    }
+  }
 
 });
 
 // FUNCTIONS
 
-function makeServerUserList(){
+function makeServerUserList(currentServerData){
   
+console.log("reached");
+
   // Für Jede Rolle ein Abteil
-  for(){
+  for(var i=0;i<currentServerData.roles.length;i++){
 
     // P Element mit Rollen Name
+    var txtRoleLabel = document.createElement('p');
+    // Set ID
+    txtRoleLabel.classList.add('menu-label');
+    txtRoleLabel.innerText = currentServerData.roles[i].name;
+    divServerUserList.appendChild(txtRoleLabel);
 
-    // User Liste in der ROlle
-    for(){
-
-    }
-
+    // Liste der User mit der aktuellen Rolle
+    var ulUsersOfRole = document.createElement('ul');
+    // TODO Set ID
+    ulUsersOfRole.classList.add('menu-list');
+    divServerUserList.appendChild(ulUsersOfRole);
   }
 
+   // Für jeden User
+   for(var j=0;j<currentServerData.users.length;j++){
+
+    // Icon
+    var iUserIcon = document.createElement('i');
+    iUserIcon.classList.add('fab');
+    iUserIcon.classList.add('fa-pied-piper-hat');
+
+    // Icon Container
+    var spanUserLabelIcon = document.createElement('span');
+    spanUserLabelIcon.classList.add('icon');
+    spanUserLabelIcon.classList.add('is-small');
+    spanUserLabelIcon.appendChild(iUserIcon);
+
+    // Text und Link
+    var aUserLink = document.createElement('a');
+    // TODO Verlinkung lol
+    aUserLink.href = '/bulma-admin-dashboard-template/forms.html';
+    aUserLink.appendChild(spanUserLabelIcon);
+    aUserLink.innerText = currentServerData.users[j].nickname;
+
+    // Listen Element
+    var liUser = document.createElement('li');
+    liUser.appendChild(aUserLink);
+    ulUsersOfRole.appendChild(liUser);
+  }
 }
 
 function createMessage(msg, user){
@@ -52,7 +105,7 @@ function createMessage(msg, user){
     image.src=user.profilePicture;
     divImage.appendChild(image);
 }
-
+/*
 <div class="box">
 <article class="media">
   <div class="media-left">
@@ -74,4 +127,4 @@ function createMessage(msg, user){
     </div>
   </div>
 </article>
-</div>
+</div>*/
