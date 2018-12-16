@@ -36,7 +36,7 @@ ipcRenderer.on('user:personal-user-info',function(e,serverData){
 
 function makeServerUserList(currentServerData){
   
-console.log("reached");
+console.log(currentServerData);
 
   // Für Jede Rolle ein Abteil
   for(var i=0;i<currentServerData.roles.length;i++){
@@ -60,21 +60,26 @@ console.log("reached");
 
     // Icon
     var iUserIcon = document.createElement('i');
-    iUserIcon.classList.add('fab');
-    iUserIcon.classList.add('fa-pied-piper-hat');
+    iUserIcon.classList.add('fas');
+    iUserIcon.classList.add('fa-fish');
 
     // Icon Container
     var spanUserLabelIcon = document.createElement('span');
     spanUserLabelIcon.classList.add('icon');
     spanUserLabelIcon.classList.add('is-small');
     spanUserLabelIcon.appendChild(iUserIcon);
+    
+    // tmp div um inner Html zu bekommen
+    var tmpDivIcon = document.createElement('div');
+    tmpDivIcon.appendChild(spanUserLabelIcon);
 
     // Text und Link
     var aUserLink = document.createElement('a');
     // TODO Verlinkung lol
     aUserLink.href = '/bulma-admin-dashboard-template/forms.html';
-    aUserLink.appendChild(spanUserLabelIcon);
-    aUserLink.innerText = currentServerData.users[j].nickname;
+    aUserLink.innerHTML = tmpDivIcon.innerHTML+' '+currentServerData.users[j].nickname;
+    //aUserLink.innerText = currentServerData.users[j].nickname;
+    //aUserLink.appendChild(spanUserLabelIcon);
 
     // Listen Element
     var liUser = document.createElement('li');
