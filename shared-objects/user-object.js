@@ -11,7 +11,5 @@ function User (id, username, nickname, password, lastOnline, registered, profile
 }
 
 module.exports = {
-
     User : User
-
 }

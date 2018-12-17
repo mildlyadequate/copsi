@@ -151,6 +151,7 @@ ioClient.on("user:logged-in:personal-info", function(userData){
 
     // Sende ServerDaten via ipc wenn Fenster fertig geladen hat
     mainWindow.webContents.on('did-finish-load', function() {
+        console.log(serverData[0].users);
         mainWindow.webContents.send('user:personal-user-info',serverData);
     });
 });

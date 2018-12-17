@@ -4,9 +4,12 @@ const {ipcRenderer,shell,Menu} = electron;
 
 // Server Display Elemente
 const divServerUserList = document.getElementById('divServerUserList');
+const navServerChannelList = document.getElementById('channelList');
+const ulServerListLeft = document.getElementById('serverListeLinks');
 
 // Variablen
-let currentSelectedServer = 'D8kjsp8I4r';
+let currentSelectedServer = '';
+let serverDataObject;
 
 // IPC 
 
@@ -19,24 +22,135 @@ ipcRenderer.on('server:connected',function(e){
 
 ipcRenderer.on('user:personal-user-info',function(e,serverData){
 
-  console.log(serverData);
-
   currentSelectedServer = serverData[0].id;
+  serverDataObject = serverData;
 
-  // Gehe durch Server Liste um aktuell selektierten zu finden
-  for(var i=0;i<serverData.length;i++){
-    if(serverData[i].id === currentSelectedServer){
-      makeServerUserList(serverData[i]);
-    }
-  }
+  setServerList(serverData);
+
+  serverChanged(currentSelectedServer);
 
 });
 
-// FUNCTIONS
+/*
+//////////////////////////// Interface Creation Functions ////////////////////////////////////////
+*/
 
-function makeServerUserList(currentServerData){
-  
-console.log(currentServerData);
+function clearServerInterface(){
+  navServerChannelList.innerHTML = '';
+  divServerUserList.innerHTML = '';
+}
+
+function setServerList(serverData){
+
+  for(var i=0;i<serverData.length;i++){
+
+    var aServerShort = document.createElement('a');
+    aServerShort.classList.add('sm-server-shortname');
+    aServerShort.innerText = serverData[i].shortName;
+    var test = serverData[i].id;
+    aServerShort.onclick = function() {serverChanged(test);};
+    //console.log(serverData[i].id);
+    //aServerShort.addEventListener("click", function() {
+     // serverChanged(serverData[i].id)
+  //}, false);
+   
+    var div = document.createElement('div');
+    div.classList.add('sm-server-shortname-container');
+    div.appendChild(aServerShort);
+
+    var spanServerShort = document.createElement('span');
+    spanServerShort.classList.add('icon');
+    spanServerShort.classList.add('is-medium');
+    spanServerShort.appendChild(div);
+
+    var liServerShort = document.createElement('li');
+    liServerShort.appendChild(spanServerShort);
+
+    var divServerShort = document.createElement('div');
+    divServerShort.classList.add('sm-team-icons');
+
+    if(serverData[i].id == currentSelectedServer){
+      divServerShort.classList.add('sm-activated');
+    }
+    divServerShort.appendChild(liServerShort);
+    ulServerListLeft.appendChild(divServerShort);
+  }
+}
+
+// Ändere den Server Titel oben links über der Channelübersicht
+function setServerTitle(title){
+  document.getElementById('hServerTitle').innerText = title;
+}
+
+// 
+function setServerChannels(channels){
+
+  // Für jeden Channel
+  for(var i=0;i<channels.length;i++){
+    
+    // Wenn der Channel eine Kategorie ist
+    if(channels[i].isCategory){
+
+      var pCategoryName = document.createElement('p');
+      pCategoryName.classList.add('menu-label');
+      pCategoryName.innerText = channels[i].name;
+      navServerChannelList.appendChild(pCategoryName);
+
+      if(channels[i].childChannels != null && channels[i].childChannels.length != 0){
+
+        // Unter Channel für Kategorie
+        var tmpChildChannels = channels[i].childChannels;
+        var ulChildChannels = document.createElement('ul');
+        ulChildChannels.classList.add('menu-list');
+        for(var j=0;j<tmpChildChannels.length;j++){
+
+          // Icon
+          var iChildChannelIcon = document.createElement('i');
+          iChildChannelIcon.classList.add('fas');
+          // Icon Code vom Channel Objekt
+          iChildChannelIcon.classList.add(tmpChildChannels[j].picture);
+
+          // Span
+          var spanChildChannel = document.createElement('span');
+          spanChildChannel.classList.add('is-small');
+          spanChildChannel.classList.add('icon');
+          spanChildChannel.appendChild(iChildChannelIcon);
+
+          // Tmp Div Container
+          var tmpDiv = document.createElement('div');
+          tmpDiv.appendChild(spanChildChannel);
+
+          // Link
+          var aChildChannelLink = document.createElement('a');
+          aChildChannelLink.href = '#';
+          aChildChannelLink.innerHTML = tmpDiv.innerHTML + ' ' + tmpChildChannels[j].name;
+
+          // List Element
+          var liChildChannel = document.createElement('li');
+          liChildChannel.appendChild(aChildChannelLink);
+
+          // An Liste anhängen
+          ulChildChannels.appendChild(liChildChannel);
+        }
+      
+
+      // An Kategorie anhängen
+      navServerChannelList.appendChild(ulChildChannels);
+    }
+
+      // Wenn der Channel ein einfacher Channel ist
+    }else{
+
+      // TODO kp vielleicht kommt hier was hin. channel außerhalb einer kategorie
+
+    }
+
+  }
+
+}
+
+// 
+function setServerUserList(currentServerData){
 
   // Für Jede Rolle ein Abteil
   for(var i=0;i<currentServerData.roles.length;i++){
@@ -46,12 +160,14 @@ console.log(currentServerData);
     // Set ID
     txtRoleLabel.classList.add('menu-label');
     txtRoleLabel.innerText = currentServerData.roles[i].name;
+    txtRoleLabel.id = 'ServerRoleListP_'+currentServerData.roles[i].id;
     divServerUserList.appendChild(txtRoleLabel);
 
     // Liste der User mit der aktuellen Rolle
     var ulUsersOfRole = document.createElement('ul');
-    // TODO Set ID
     ulUsersOfRole.classList.add('menu-list');
+    ulUsersOfRole.id = 'ServerRoleListUl_'+currentServerData.roles[i].id;
+
     divServerUserList.appendChild(ulUsersOfRole);
   }
 
@@ -84,7 +200,7 @@ console.log(currentServerData);
     // Listen Element
     var liUser = document.createElement('li');
     liUser.appendChild(aUserLink);
-    ulUsersOfRole.appendChild(liUser);
+    document.getElementById('ServerRoleListUl_'+currentServerData.users[j].role).appendChild(liUser);
   }
 }
 
@@ -110,26 +226,25 @@ function createMessage(msg, user){
     image.src=user.profilePicture;
     divImage.appendChild(image);
 }
+
 /*
-<div class="box">
-<article class="media">
-  <div class="media-left">
-    <figure class="image is-64x64">
+//////////////////////////// User Interaction Functions ////////////////////////////////////////
+*/
 
+function serverChanged(selectedServer){
 
-    
-      <img src="assets/img/placeholder/prof.png" alt="Image">
-    </figure>
-  </div>
-  <div class="media-content">
-    <div class="content">
-      <p>
-        <strong>Dieter Wallach</strong> <small>Professor</small> <small>10d</small>
-        <br>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean efficitur sit amet massa
-        fringilla egestas. Nullam condimentum luctus turpis.
-      </p>
-    </div>
-  </div>
-</article>
-</div>*/
+  clearServerInterface();
+  // TODO hin und her klicken geht nicht lol
+  
+  console.log("hmm");
+  console.log(selectedServer);
+
+  // Gehe durch Server Liste um aktuell selektierten zu finden
+  for(var i=0;i<serverDataObject.length;i++){
+    if(serverDataObject[i].id === selectedServer){
+      setServerTitle(serverDataObject[i].shortName);
+      setServerChannels(serverDataObject[i].channels);
+      setServerUserList(serverDataObject[i]);
+    }
+  }
+}

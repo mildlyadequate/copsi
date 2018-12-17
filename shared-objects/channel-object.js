@@ -1,11 +1,14 @@
 // Channel Objekt
-// id:shortid, name:string, type:enum, messages:array, roleAbility:Object
-function Channel(id, name, type, messages, roleAbility) {
+// id:shortid, name:string, type:enum, messages:array:messages, isCategory:boolean, roleAbility:Object, childChannels:array:channels
+function Channel(id, name, type, messages, isCategory, picture, roleAbility, childChannels) {
     this.id = id,
     this.name = name,
     this.type = type,
     this.messages = messages,
-    this.roleAbility = roleAbility
+    this.isCategory = isCategory,
+    this.picture = picture,
+    this.roleAbility = roleAbility,
+    this.childChannels = childChannels
 }
 
 // RoleAbility Objekt
@@ -22,5 +25,5 @@ module.exports = {
     RoleAbility : RoleAbility,
 
     // Lege alle möglichen Typen von Channels fest
-    type : Object.freeze({"chat":1, "news":2, "document":3})
+    type : Object.freeze({"chat":1, "news":2, "doc":3})
 }

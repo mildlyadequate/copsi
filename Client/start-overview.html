@@ -7,7 +7,7 @@
   <title>Studienprojekt</title>
   <link rel="stylesheet" href="assets/css/bulma.css">
   <link rel="stylesheet" href="assets/css/basics.css">
-  <link rel="stylesheet" type="text/css" href="assets/css/02-start-overview.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/start-overview.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="assets/fonts/fontawesome/css/all.css">
   <link rel="stylesheet" href="assets/fonts/typekit-fonts/montserrat/otf/Montserrat.css">
@@ -23,101 +23,27 @@
 
     <div class="columns">
 
-      <!-- left team column-->
+      <!-- Server Liste Links -->
       <aside class="column is-1 aside sm-teams sm-t sm-l sm-b" style="text-align: center;">
-        <ul>
-          <div class="sm-team-icons sm-activated">
-            <li>
-              <span class="icon is-medium">
-                <i class="fas fa-2x fa-fish"></i>
-              </span>
-            </li>
-          </div>
-          <div class="sm-team-icons">
-            <li>
-              <span class="icon is-medium">
-                <i class="fas fa-2x fa-dove"></i>
-              </span>
-            </li>
-          </div>
-          <div class="sm-team-icons">
-            <li>
-              <span class="icon is-medium">
-                <i class="fas fa-2x fa-kiwi-bird"></i>
-              </span>
-            </li>
-          </div>
-          <div class="sm-team-icons">
-            <li>
-              <span class="icon is-medium">
-                <i class="fas fa-2x fa-hat-wizard"></i>
-              </span>
-            </li>
-          </div>
-          <div class="sm-team-icons">
-            <li>
-              <span class="icon is-medium">
-                <i class="fas fa-2x fa-plus-square"></i>
-              </span>
-            </li>
-          </div>
+        <ul id="serverListeLinks">
+
+          <!-- Server Item in css Datei definiert:  start-overview.css:.sm-server-shortname -->
+          
         </ul>
       </aside>
 
       <!-- side menu -->
       <aside class="column is-2 aside sm-t sm-b">
+
+        <!-- Server Titel -->
         <div class="sm-channels-header">
-          <h1 class="title">HCI</h1>
+          <!-- Automatisch geändert durch Script: function setServerTitle() -->
+          <h1 id="hServerTitle" class="title">title</h1>
         </div>
 
-        <nav class="menu">
-          <p class="menu-label">
-            Allgemein
-          </p>
-          <ul class="menu-list">
-            <li>
-              <a class="is-active" href="#"><span class="icon is-small"><i class="fas fa-file-alt"></i></span>
-                Neuigkeiten
-              </a>
-            </li>
-          </ul>
-          <p class="menu-label">
-            Grundlagen
-          </p>
-          <ul class="menu-list">
-            <li>
-              <a href="#">
-                <span class="icon is-small">
-                  <i class="fas fa-book"></i>
-                </span>
-                Skripte
-              </a>
-            </li>
-            <li>
-              <a href="#"><span class="icon is-small"><i class="fas fa-graduation-cap"></i></span>
-                Übungen
-              </a>
-            </li>
-            <li><a href="#"><span class="icon is-small"><i class="fas fa-folder-open"></i></span>
-                Beispiele
-              </a>
-            </li>
-
-            <p class="menu-label">
-              Fragen & Antworten
-            </p>
-            <ul class="menu-list">
-              <li>
-                <a><span class="icon is-small"><i class="fas fa-ghost"></i></span>
-                  Anonym
-                </a>
-              </li>
-              <li>
-                <a><span class="icon is-small"><i class="fas fa-question-circle"></i></span>
-                  Diskussion
-                </a>
-              </li>
-            </ul>
+        <!-- Channel Übersicht -->
+        <nav id="channelList" class="menu">
+          <!-- Automatisch gefüllt/erstellt durch Script: function setServerChannels() -->
         </nav>
       </aside>
 
@@ -322,43 +248,11 @@
       <!-- User / Mitglieder / Teilnehmer im Kurs -->
       <div  class="column is-2 aside sm-t">
         <nav id="divServerUserList" class="menu">
-          <p class="menu-label">
-            Professor
-          </p>
-          <ul class="menu-list">
-            <li><a href="#"><span class="icon is-small"><i class="fas fa-heart"></i></span>Dieter Wallach</a></li>
-          </ul>
-          <p class="menu-label">
-            Assistenten
-          </p>
-          <ul class="menu-list">
-            <li>
-              <a href="/bulma-admin-dashboard-template/forms.html">
-                <span class="icon is-small">
-                  <i class="fab fa-pied-piper-hat"></i>
-                </span>
-                Vlad Imir
-              </a>
-            </li>
-            <li><a href="/bulma-admin-dashboard-template/ui-elements.html">
-              <span class="icon is-small">
-                  <i class="fab fa-pied-piper-hat"></i>
-              </span>
-                Vlad Islaw</a></li>
-          
-            <p class="menu-label">
-              Studierende
-            </p>
-            <ul class="menu-list">
-              <li><a><span class="icon is-small"><i class="fas fa-fish"></i></span> Vname Nname</a></li>
-              <li><a><span class="icon is-small"><i class="fas fa-fish"></i></span> Vname Nname</a></li>
-            </ul>
+          <!-- Automatisch gefüllt/erstellt durch Script: function makeServerUserList() -->
         </nav>
       </div>
 
-
     </div>
-
   </section>
 
   <!-- SCRIPTS -->

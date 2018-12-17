@@ -60,15 +60,25 @@ let roleStud = new Role(shortid.generate(),'Student','10FFFF');
 // Role Ability - read, write, fileupload, manageMsgs
 let rfChannel1 = new RoleAbility([roleProf.id,roleStud.id],[roleProf.id],[roleProf.id],[roleProf.id]);
 
+// Server 1 Channel
+let cat1sub1 = new Channel(shortid.generate(),'Neuigkeiten',channelModule.type.news,[],false,'fa-file-alt',rfChannel1,[]);
+let category1 = new Channel(shortid.generate(),'Allgemein',channelModule.type.chat,[],true,'',rfChannel1,[cat1sub1]);
+let cat2sub1 = new Channel(shortid.generate(),'Skripte',channelModule.type.doc,[],false,'fa-book',rfChannel1,[]);
+let cat2sub2 = new Channel(shortid.generate(),'Übungen',channelModule.type.doc,[],false,'fa-graduation-cap',rfChannel1,[]);
+let cat2sub3 = new Channel(shortid.generate(),'Beispiele',channelModule.type.doc,[],false,'fa-folder-open',rfChannel1,[]);
+let category2 = new Channel(shortid.generate(),'Grundlagen',channelModule.type.chat,[],true,'',rfChannel1,[cat2sub1,cat2sub2,cat2sub3]);
+let cat3sub1 = new Channel(shortid.generate(),'Anonym',channelModule.type.chat,[],false,'fa-ghost',rfChannel1,[]);
+let cat3sub2 = new Channel(shortid.generate(),'Diskussion',channelModule.type.chat,[],false,'fa-question-circle',rfChannel1,[]);
+let category3 = new Channel(shortid.generate(),'Fragen & Antworten',channelModule.type.chat,[],true,'',rfChannel1,[cat3sub1,cat3sub2]);
+
 // Channel Objekte - id, name, type, msg, role
-let channel1 = new Channel(shortid.generate(),'Allgemein',channelModule.type.chat,[],rfChannel1);
-let channel2 = new Channel(shortid.generate(),'News',channelModule.type.news,[],rfChannel1);
+let channel2 = new Channel(shortid.generate(),'News',channelModule.type.news,[],false,'fa-file-alt',rfChannel1,[]);
 
 // Server User Ability - admin, moderator, announcement
 let serverUserAbility = new ServerUserAbility([roleProf.id],[roleProf.id],[roleProf.id]);
 
 // Server Objekte - id, shortname, name, subjectArea, user, channel
-let server1 = new Server(shortid.generate(),'EIS',undefined,'Entwicklung Interaktiver Systeme','IMST',[channel1],[roleProf,roleStud],serverUserAbility);
+let server1 = new Server(shortid.generate(),'HCI',undefined,'Entwicklung Interaktiver Systeme','IMST',[category1,category2,category3],[roleProf,roleStud],serverUserAbility);
 let server2 = new Server(shortid.generate(),'MGS',undefined,'Mediengestaltung','IMST',[channel2],[roleProf,roleStud],serverUserAbility);
 
 // Server Passwort verschlüsseln und hinzufügen
@@ -79,11 +89,10 @@ bcrypt.hash("eis2018", 10, function(err, hash) {
 // Kombo Objekte
 let sur1 = new Sur(server1.id,user1.id,roleStud.id);
 let sur2 = new Sur(server1.id,user2.id,roleStud.id);
+let sur3 = new Sur(server1.id,user3.id,roleProf.id);
 
-let sur3 = new Sur(server2.id,user1.id,roleStud.id);
-let sur4 = new Sur(server2.id,user2.id,roleStud.id);
-
-let sur5 = new Sur(server1.id,user3.id,roleProf.id);
+let sur4 = new Sur(server2.id,user1.id,roleStud.id);
+let sur5 = new Sur(server2.id,user2.id,roleStud.id);
 let sur6 = new Sur(server2.id,user3.id,roleProf.id);
 
 

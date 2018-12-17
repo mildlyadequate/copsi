@@ -19,6 +19,7 @@ console.log('Server running.');
 
 // Datenbank Daten Maps
 let userList = new Map();
+let onlineUserList = new Map();
 let serverList = new Map();
 let surList = [];
 
@@ -38,6 +39,7 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
     console.log("DB connected");
 
     // Lade alle Server
+    updateUserList(copsiDB);
     updateServerList(copsiDB);
     updateSurList(copsiDB);
 
@@ -71,7 +73,7 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
                         sendUserServerInfo(copsiDB,result[0],socket);
 
                         // User der Map hinzufügen
-                        userList.set(result[0].id, {socket:socket,user:result[0]});
+                        onlineUserList.set(result[0].id, {socket:socket,user:result[0]});
                         console.log('Client logged in: '+result[0].username);
 
                        // TODO getServerUserList();
@@ -116,7 +118,7 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
 });
 
 /*
-//////////////////////////// Datenbank Funktionen ////////////////////////////////////////
+//////////////////////////// Datenbank Server Init ////////////////////////////////////////
 */
 
 // Lade aktuelle Serverliste von der Datenbank
@@ -152,6 +154,23 @@ function updateSurList(copsiDB){
     });
 }
 
+// Lade aktuelle UserListe von der Datenbank
+// Wird beim Server start einmal ausgeführt, ab dann nur noch geupdated
+function updateUserList(copsiDB){
+    copsiDB.collection("users").find({}).toArray(function(err, result) {
+        // TODO Handle Error
+        if (err) throw err;
+
+        for(var i=0;i<result.length;i++){
+            userList.set(result[i].id,result[i]);
+        }
+    });
+}
+
+/*
+//////////////////////////// Datenbank Funktionen ////////////////////////////////////////
+*/
+
 // Erstellt Paket von Informationen für einen individuellen Benutzer
 function sendUserServerInfo(copsiDB,user,socket){
     copsiDB.collection("servers").find({}).toArray(function(err, result) {
@@ -171,15 +190,24 @@ function sendUserServerInfo(copsiDB,user,socket){
             // Sur
             for(var j=0;j<surList.length;j++){
 
+                // Check ob user ID mit dem aktuellen User und Server ID mit dem aktuell angeschauten Server übereinstimmen
+                if(surList[j].serverid===result[i].id){
+                    // surList[j].userid === user.id && 
 
-
-                if(surList[j].userid === user.id && surList[j].serverid===result[i].id){
-                    var tmpUser = userList.get(user.id).user;
+                    // Erstellt und fügt User zum Server Objekt hinzu. In der DB werden diese nur durch Sur verbunden
+                    var tmpUser = userList.get(surList[j].userid);
+                    // Entferne private Daten des Benutzers (PW)
                     delete tmpUser.password;
+                    tmpUser['role'] = surList[j].roleid;
+
                     serverObject.users.push(tmpUser);
-                    tmpUserServerList.push(serverObject);
                 }
             }
+            
+        console.log(serverObject.users);
+
+            // Speichere Server Objekt in Liste die später dem Client geschickt wird
+            tmpUserServerList.push(serverObject);
 
         }
 

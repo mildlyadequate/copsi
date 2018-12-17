@@ -1,12 +1,12 @@
 // Server Objekt
 // id:shortid, shortName:string, name:string, subjectArea:string, user:array:userid, channel:array:userid, roles:roleobjects
-function Server(id, shortName, password, name, subjectArea, channel, roles, userAbility) {
+function Server(id, shortName, password, name, subjectArea, channels, roles, userAbility) {
     this.id = id,
     this.shortName = shortName,
     this.password = password,
     this.name = name,
     this.subjectArea = subjectArea,
-    this.channel = channel,
+    this.channels = channels,
     this.roles = roles,
     this.userAbility = userAbility
 }
@@ -21,7 +21,6 @@ function UserAbility(admin,moderator,announcement) {
     this.moderator = moderator,
     this.announcement = announcement
 }
-
 
 module.exports = {
     Server : Server,
