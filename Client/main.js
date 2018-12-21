@@ -113,6 +113,17 @@ ipcMain.on('user:login',function(e,loginData){
     ioClient.emit('user:login',[loginData[0],loginData[1]]);
 });
 
+ipcMain.on('server:message:send',function(e,obj){
+
+    var srvId = obj[0];
+    var chnId = obj[1];
+    var msg = obj[2];
+
+    var t = 'msg-srv:'+srvId+'-chn:'+chnId;
+    console.log(t.length);
+    ioClient.emit('msg-srv:'+srvId+'-chn:'+chnId, msg);
+});
+
 /*
 //////////////////////////// SOCKET.IO EVENTS ////////////////////////////////////////
 */
@@ -151,7 +162,6 @@ ioClient.on("user:logged-in:personal-info", function(userData){
 
     // Sende ServerDaten via ipc wenn Fenster fertig geladen hat
     mainWindow.webContents.on('did-finish-load', function() {
-        console.log(serverData[0].users);
         mainWindow.webContents.send('user:personal-user-info',serverData);
     });
 });

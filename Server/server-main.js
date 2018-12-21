@@ -89,18 +89,46 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
             console.log('Client gone: '+socket.id);
             // TODO user von liste/map entfernen wenn disconnected
         });
-
-        socket.on('message:hci:send', (msg) => {
-            console.log(msg);
-            socket.emit('message:hci:received',[userMe,msg]);
-        });
     });
+});
+
+let tmpServerIndex = 0;
+function initServerFunction(){
 
     // Erstelle Events für jeden Server der Servermap
     // TODO Listener aus Server Objekt erstellen
-    for(var i=0;i<serverList.size;i++){
+    var serverConnections = Array.from(serverList.values());
+    for(var i=0;i<serverConnections.length;i++){
 
-        serverList.get(i).on('connection', function(socket){
+        
+        tmpServerIndex = i;
+        console.log("i "+tmpServerIndex);
+        // Für jeden Server
+        serverConnections[i][1].on('connection', function(socket){
+            //TODO komme nicht an aktuelles objekt durch i ran ???
+
+            var srvId = this.name.substring(1, this.name.length);
+            var srv = serverList.get(srvId)[0];
+
+            // Für jede Kategorie/OberChannel
+            for(var j=0;j<srv.channels.length;j++){
+            
+                // Check ob Kategorie Subchannel hat
+                if(srv.channels[j].childChannels!=undefined && srv.channels[j].isCategory == true){
+                    // Für jeden SubChannel
+                    for(var x=0;x<srv.channels[j].childChannels.length;x++){
+                        var chnId = srv.channels[j].childChannels[x].id;
+                        var t = 'msg-srv:'+srvId+'-chn:'+chnId;
+                        console.log(t.length);
+                        // Message Empfänger hinzufügen
+                        // TODO anstatt t wahrscheinlich generisches event und über parameter channel und server bestimmen
+                        socket.on(t, (msg) => {
+                            console.log("msg");
+                        });
+
+                    }
+                }
+            }
 
             socket.on('message:send', (msg) => {
                 console.log(msg);
@@ -115,7 +143,7 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
             console.log('Client '+socket.id+' connected to HCI.');
         });
     }
-});
+}
 
 /*
 //////////////////////////// Datenbank Server Init ////////////////////////////////////////
@@ -138,6 +166,7 @@ function updateServerList(copsiDB){
             }
 
         }
+        initServerFunction();
     });
 }
 
@@ -204,8 +233,6 @@ function sendUserServerInfo(copsiDB,user,socket){
                 }
             }
             
-        console.log(serverObject.users);
-
             // Speichere Server Objekt in Liste die später dem Client geschickt wird
             tmpUserServerList.push(serverObject);
 

@@ -1,32 +1,42 @@
 // Electron
 const electron = require('electron');
+const shortid = require('shortid');
 const {ipcRenderer,shell,Menu} = electron;
+
+// Custom Modules
+const msgModule = require('../shared-objects/message-object.js');  
+const Message = msgModule.Message;
 
 // Server Display Elemente
 const divServerUserList = document.getElementById('divServerUserList');
 const navServerChannelList = document.getElementById('channelList');
 const ulServerListLeft = document.getElementById('serverListeLinks');
+const txaMessage = document.getElementById('txaMessage');
 
 // Variablen
 let currentSelectedServer = '';
+let currentSelectedChannel = '';
 let serverDataObject;
 
 // IPC 
 
-
+// Wenn verbindung zu server hergestellt wurde
 ipcRenderer.on('server:connected',function(e){
 
   console.log('connected');
 
 });
 
+// bei login gesendet von server, enthält alle nötigen serverdaten
 ipcRenderer.on('user:personal-user-info',function(e,serverData){
 
   currentSelectedServer = serverData[0].id;
+  //TODO wechsel aktuellen channel
+  currentSelectedChannel = serverData[0].channels[1].childChannels[0].id;
+
   serverDataObject = serverData;
 
   setServerList(serverData);
-
   serverChanged(currentSelectedServer);
 
 });
@@ -35,44 +45,59 @@ ipcRenderer.on('user:personal-user-info',function(e,serverData){
 //////////////////////////// Interface Creation Functions ////////////////////////////////////////
 */
 
+// Dynamische container leeren
 function clearServerInterface(){
+
+  // Channels
   navServerChannelList.innerHTML = '';
+
+  // User
   divServerUserList.innerHTML = '';
 }
 
+// Serverliste ganz links anzeigen
 function setServerList(serverData){
 
   for(var i=0;i<serverData.length;i++){
 
+    // Link Element A
     var aServerShort = document.createElement('a');
     aServerShort.classList.add('sm-server-shortname');
     aServerShort.innerText = serverData[i].shortName;
     var test = serverData[i].id;
-    aServerShort.onclick = function() {serverChanged(test);};
-    //console.log(serverData[i].id);
-    //aServerShort.addEventListener("click", function() {
-     // serverChanged(serverData[i].id)
-  //}, false);
-   
+
+    // Onclick in for Schleife muss so aussehen weil: https://stackoverflow.com/questions/6048561/setting-onclick-to-use-current-value-of-variable-in-loop
+    aServerShort.onclick = function(arg) {
+      return function() {
+        serverChanged(arg);
+      }
+    }(test);
+
+    // A Container Div
     var div = document.createElement('div');
     div.classList.add('sm-server-shortname-container');
     div.appendChild(aServerShort);
 
+    // Span
     var spanServerShort = document.createElement('span');
     spanServerShort.classList.add('icon');
     spanServerShort.classList.add('is-medium');
     spanServerShort.appendChild(div);
 
+    // li
     var liServerShort = document.createElement('li');
     liServerShort.appendChild(spanServerShort);
 
+    // Äußerer Container
     var divServerShort = document.createElement('div');
     divServerShort.classList.add('sm-team-icons');
-
+    // Wenn Server der aktuell selektierte ist
     if(serverData[i].id == currentSelectedServer){
       divServerShort.classList.add('sm-activated');
     }
     divServerShort.appendChild(liServerShort);
+
+    // Zu ul hinzufügen
     ulServerListLeft.appendChild(divServerShort);
   }
 }
@@ -82,7 +107,7 @@ function setServerTitle(title){
   document.getElementById('hServerTitle').innerText = title;
 }
 
-// 
+// Nutzer des Servers darstellen
 function setServerChannels(channels){
 
   // Für jeden Channel
@@ -91,11 +116,13 @@ function setServerChannels(channels){
     // Wenn der Channel eine Kategorie ist
     if(channels[i].isCategory){
 
+      // Kategorie als P Element erstellen
       var pCategoryName = document.createElement('p');
       pCategoryName.classList.add('menu-label');
       pCategoryName.innerText = channels[i].name;
       navServerChannelList.appendChild(pCategoryName);
 
+      // Wenn die Kategorie unter Channel hat
       if(channels[i].childChannels != null && channels[i].childChannels.length != 0){
 
         // Unter Channel für Kategorie
@@ -149,7 +176,7 @@ function setServerChannels(channels){
 
 }
 
-// 
+// Nutzer des servers darstellen
 function setServerUserList(currentServerData){
 
   // Für Jede Rolle ein Abteil
@@ -231,17 +258,30 @@ function createMessage(msg, user){
 //////////////////////////// User Interaction Functions ////////////////////////////////////////
 */
 
+// Enter taste macht neue zeile killme
+function onMessageEnterPressed(e){
+  if(e.keyCode==13){
+
+    // Erstelle Nachricht
+    var tmpmsg = new Message(shortid.generate(),0,'22:20',txaMessage.value,undefined,currentSelectedChannel,currentSelectedServer);
+
+    ipcRenderer.send('server:message:send',[currentSelectedServer,currentSelectedChannel,tmpmsg]);
+    return false;
+  }
+}
+
+// Wird aufgerufen um den aktuell gezeigten Server zu ändern
 function serverChanged(selectedServer){
 
+  // Alle dynamischen container leeren
   clearServerInterface();
-  // TODO hin und her klicken geht nicht lol
-  
-  console.log("hmm");
-  console.log(selectedServer);
+
+  // Globale Variable ändern
+  currentSelectedServer = selectedServer;
 
   // Gehe durch Server Liste um aktuell selektierten zu finden
   for(var i=0;i<serverDataObject.length;i++){
-    if(serverDataObject[i].id === selectedServer){
+    if(serverDataObject[i].id === currentSelectedServer){
       setServerTitle(serverDataObject[i].shortName);
       setServerChannels(serverDataObject[i].channels);
       setServerUserList(serverDataObject[i]);

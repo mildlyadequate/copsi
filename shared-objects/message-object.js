@@ -1,18 +1,13 @@
 //TODO idk lol
 
-function Message (id, type, timestamp, content, sender) {
+function Message (id, type, timestamp, content, senderId, channelId, serverId) {
     this.id = id,
     this.type = type,  
-    /*      
-        0 - text
-        1 - image
-        2 - video 
-    */
     this.timestamp = timestamp,
     this.content = content,
-    this.sender = sender+
-    kurs
-    channel
+    this.senderId = senderId,
+    this.channelId = channelId,
+    this.serverId = serverId
     /*this.fullName = function() {
         return this.firstName + " " + this.lastName;
     }*/
@@ -20,6 +15,8 @@ function Message (id, type, timestamp, content, sender) {
 
 module.exports = {
 
-    Message : Message
+    Message : Message,
+
+    type : Object.freeze({"txt":1, "img":2, "vid":3, "doc":4})
 
 }

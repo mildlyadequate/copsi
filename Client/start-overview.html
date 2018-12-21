@@ -242,7 +242,17 @@
               </article>
             </div>
           </div>
+        </div> <!-- Columns Div -->
+
+        <!-- TODO Texteingabe hier-->
+        <div class="columns">
+          <div class="column">
+            <div class="control">
+              <textarea id="txaMessage" class="textarea" placeholder="Nachricht an @Allgemein"></textarea>
+            </div>
+          </div>
         </div>
+
       </main>
 
       <!-- User / Mitglieder / Teilnehmer im Kurs -->
@@ -257,6 +267,37 @@
 
   <!-- SCRIPTS -->
   <script type='text/javascript' src='start-overview.js'></script>
+  <script>window.$ = window.jQuery = require('jquery');</script>
+  <script>
+    // JQuery
+    $(document).ready(function(){
+
+      // Keylistener der TextArea txaMessage
+      $('#txaMessage').keypress(function(event) {
+        
+        // Wenn Shift gedrückt ist
+        if(event.shiftKey){
+
+          // Enter Taste
+          if (event.keyCode == 13) {
+            return true;
+          }
+
+          // Wenn Shift nicht gedrückt ist
+        }else{
+          
+          // Enter Taste
+          if (event.keyCode == 13) {
+            // Verhindere standard Verhalten (neue Zeile)
+            event.preventDefault();
+            // Sende Nachricht stattdessen
+            onMessageEnterPressed(event);
+          }
+        }
+      });
+    });
+    
+  </script>
 
 </body>
 
