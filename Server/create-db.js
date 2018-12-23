@@ -46,11 +46,14 @@ users.push(user2);
 users.push(user3);
 
 // User Passwort verschlüsseln und hinzufügen
-bcrypt.hash("seb123", 10, function(err, hash) {
+bcrypt.hash("123", 10, function(err, hash) {
   users[0].password = hash;
 });
-bcrypt.hash("phil123", 10, function(err, hash) {
+bcrypt.hash("123", 10, function(err, hash) {
   users[1].password = hash;
+});
+bcrypt.hash("123", 10, function(err, hash) {
+  users[2].password = hash;
 });
 
 // Role Objekte - id, name, color

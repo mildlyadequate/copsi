@@ -17,3 +17,6 @@ Ideen:
 - Gantt chart 
 - Fragen channel in dem fragen geöffnet werden können und bei Beantwortung geschlossen - > offene Fragen übersichtlich angezeigt
 - Evtl github Projekt verlinken / mit api Änderungen zeigen 
+
+->> um performance zu verbessern anstatt eine sur tabelle für alle server, eine tabelle pro server
+--------

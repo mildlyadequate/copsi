@@ -1,6 +1,7 @@
 // Electron
 const electron = require('electron');
 const shortid = require('shortid');
+const moment = require('moment');
 const {ipcRenderer,shell,Menu} = electron;
 
 // Custom Modules
@@ -11,12 +12,15 @@ const Message = msgModule.Message;
 const divServerUserList = document.getElementById('divServerUserList');
 const navServerChannelList = document.getElementById('channelList');
 const ulServerListLeft = document.getElementById('serverListeLinks');
+const divMessageContainer = document.getElementById('divMessageContainer');
 const txaMessage = document.getElementById('txaMessage');
 
 // Variablen
-let currentSelectedServer = '';
-let currentSelectedChannel = '';
+let selectedServerObject;
+let selectedServerId = '';
+let selectedChannelId = '';
 let serverDataObject;
+let userMe;
 
 // IPC 
 
@@ -28,16 +32,32 @@ ipcRenderer.on('server:connected',function(e){
 });
 
 // bei login gesendet von server, enthält alle nötigen serverdaten
-ipcRenderer.on('user:personal-user-info',function(e,serverData){
+ipcRenderer.on('user:personal-user-info',function(e,initObject){
 
-  currentSelectedServer = serverData[0].id;
+  // Server Objekt und eigenes User Objekt
+  var serverData = initObject[0];
+  userMe = initObject[1];
+
+  // Variablen um aktuell selektierten Server/Channel zu merken
+  selectedServerId = serverData[0].id;
   //TODO wechsel aktuellen channel
-  currentSelectedChannel = serverData[0].channels[1].childChannels[0].id;
+  selectedChannelId = serverData[0].channels[1].childChannels[0].id;
 
+  // Auf globale Variable setzen
   serverDataObject = serverData;
 
+  // Serverliste erstellen und server selektieren
   setServerList(serverData);
-  serverChanged(currentSelectedServer);
+  serverChanged(selectedServerId);
+});
+
+// Wenn eine Nachricht empfangen wurde
+ipcRenderer.on('server:message',function(e,msg){
+
+  // Check ob Nachricht auf aktuellem Server
+  if(msg.serverId == selectedServerId){
+    divMessageContainer.appendChild(getMessageElement(msg));
+  }
 
 });
 
@@ -53,6 +73,9 @@ function clearServerInterface(){
 
   // User
   divServerUserList.innerHTML = '';
+
+  // Messages
+  divMessageContainer.innerHTML = '';
 }
 
 // Serverliste ganz links anzeigen
@@ -64,14 +87,14 @@ function setServerList(serverData){
     var aServerShort = document.createElement('a');
     aServerShort.classList.add('sm-server-shortname');
     aServerShort.innerText = serverData[i].shortName;
-    var test = serverData[i].id;
 
     // Onclick in for Schleife muss so aussehen weil: https://stackoverflow.com/questions/6048561/setting-onclick-to-use-current-value-of-variable-in-loop
+    var srvId = serverData[i].id;
     aServerShort.onclick = function(arg) {
       return function() {
         serverChanged(arg);
       }
-    }(test);
+    }(srvId);
 
     // A Container Div
     var div = document.createElement('div');
@@ -92,7 +115,7 @@ function setServerList(serverData){
     var divServerShort = document.createElement('div');
     divServerShort.classList.add('sm-team-icons');
     // Wenn Server der aktuell selektierte ist
-    if(serverData[i].id == currentSelectedServer){
+    if(serverData[i].id == selectedServerId){
       divServerShort.classList.add('sm-activated');
     }
     divServerShort.appendChild(liServerShort);
@@ -151,6 +174,12 @@ function setServerChannels(channels){
           var aChildChannelLink = document.createElement('a');
           aChildChannelLink.href = '#';
           aChildChannelLink.innerHTML = tmpDiv.innerHTML + ' ' + tmpChildChannels[j].name;
+          aChildChannelLink.onclick = function(arg) {
+            return function() {
+              // TODO Channel ändern und alte nachrichten laden
+              divMessageContainer.innerHTML = '';
+            }
+          }('xd');
 
           // List Element
           var liChildChannel = document.createElement('li');
@@ -231,27 +260,69 @@ function setServerUserList(currentServerData){
   }
 }
 
-function createMessage(msg, user){
+// Erzeugt eine Nachricht im Html
+function getMessageElement(msg){
 
-    var divBox = document.createElement('div');
-    divBox.classList.add('box');
+  // ARTICLE DIV 1
+  // Image
+  var image = document.createElement('img');
+  image.src= 'assets/img/placeholder/prof.png';
 
-    var article = document.createElement('article');
-    article.classList.add('media');
+  // Figure
+  var figure = document.createElement('figure');
+  figure.classList.add('image');
+  figure.classList.add('is-64x64');
+  figure.appendChild(image);
 
-    divBox.appendChild(article);
+  // Image Div
+  var divImage = document.createElement('div');
+  divImage.classList.add('media-left');
+  divImage.appendChild(figure);
 
-    var divImage = document.createElement('div');
-    divImage.classList.add('media-left');
+  // ARTICLE DIV 2
+  // User Name mit ID aus Server Objekt laden
+  var uName = 'name';
+  var uRoleId;
+  for(var i=0;i<selectedServerObject.users.length;i++){
+    if(selectedServerObject.users[i].id==msg.senderId){
+      uName = selectedServerObject.users[i].nickname;
+      uRoleId = selectedServerObject.users[i].role;
+    }
+  }
+  // Rollen Name mit ID aus Server Objekt laden
+  var uRole = 'role';
+  for(var i=0;i<selectedServerObject.roles.length;i++){
+    if(selectedServerObject.roles[i].id==uRoleId){
+      uRole = selectedServerObject.roles[i].name;
+    }
+  }
+  // P Content Element
+  var pContent = document.createElement('p');
+  pContent.innerHTML = '<strong>'+uName+'</Strong> <small>'+uRole+'</small> <small>'+moment(msg.timestamp).format("DD.MM.YYYY, HH:mm")+'</small> <br>'+msg.content;
 
-    var figure = document.createElement('figure');
-    figure.classList.add('image');
-    figure.classList.add('is-64x64');
-    divImage.appendChild(figure);
+  // Content Inner Div
+  var divInnerContent = document.createElement('div');
+  divInnerContent.classList.add('content');
+  divInnerContent.appendChild(pContent);
 
-    var image = document.createElement('img');
-    image.src=user.profilePicture;
-    divImage.appendChild(image);
+  // Content Div
+  var divContent = document.createElement('div');
+  divContent.classList.add('media-content');
+  divContent.appendChild(divInnerContent);
+
+  // 
+  // ARTICLE
+  var article = document.createElement('article');
+  article.classList.add('media');
+  article.appendChild(divImage);
+  article.appendChild(divContent);
+
+  // Äußerer Container
+  var divBox = document.createElement('div');
+  divBox.classList.add('box');
+  divBox.appendChild(article);
+
+  return divBox;
 }
 
 /*
@@ -263,9 +334,10 @@ function onMessageEnterPressed(e){
   if(e.keyCode==13){
 
     // Erstelle Nachricht
-    var tmpmsg = new Message(shortid.generate(),0,'22:20',txaMessage.value,undefined,currentSelectedChannel,currentSelectedServer);
+    var tmpmsg = new Message(shortid.generate(), msgModule.type.txt, new Date(), txaMessage.value, userMe.id, selectedChannelId, selectedServerId);
 
-    ipcRenderer.send('server:message:send',[currentSelectedServer,currentSelectedChannel,tmpmsg]);
+    ipcRenderer.send('server:message:send',tmpmsg);
+    txaMessage.value = '';
     return false;
   }
 }
@@ -277,11 +349,16 @@ function serverChanged(selectedServer){
   clearServerInterface();
 
   // Globale Variable ändern
-  currentSelectedServer = selectedServer;
+  selectedServerId = selectedServer;
 
   // Gehe durch Server Liste um aktuell selektierten zu finden
   for(var i=0;i<serverDataObject.length;i++){
-    if(serverDataObject[i].id === currentSelectedServer){
+    if(serverDataObject[i].id === selectedServerId){
+
+      // Speichern um die For Schleife zu sparen wenn das Objekt gebraucht wird
+      selectedServerObject = serverDataObject[i];
+
+      // UI erstellen
       setServerTitle(serverDataObject[i].shortName);
       setServerChannels(serverDataObject[i].channels);
       setServerUserList(serverDataObject[i]);

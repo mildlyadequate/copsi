@@ -38,10 +38,8 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
     const copsiDB = db.db("copsi");
     console.log("DB connected");
 
-    // Lade alle Server
+    // Lade alle Daten (Methoden rufen sich gegenseitig auf um Reihenfolge zu garantieren)
     updateUserList(copsiDB);
-    updateServerList(copsiDB);
-    updateSurList(copsiDB);
 
     // Event für jeden neu verbundenen Client
     io.on('connection', (socket) => {
@@ -92,55 +90,48 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
     });
 });
 
-let tmpServerIndex = 0;
 function initServerFunction(){
 
     // Erstelle Events für jeden Server der Servermap
     // TODO Listener aus Server Objekt erstellen
     var serverConnections = Array.from(serverList.values());
-    for(var i=0;i<serverConnections.length;i++){
+    for(var x=0;x<serverConnections.length;x++){
 
-        
-        tmpServerIndex = i;
-        console.log("i "+tmpServerIndex);
         // Für jeden Server
-        serverConnections[i][1].on('connection', function(socket){
-            //TODO komme nicht an aktuelles objekt durch i ran ???
+        serverConnections[x][1].on('connection', function(socket){
 
+            // Server Objekt und ID mit this von map bekommen
             var srvId = this.name.substring(1, this.name.length);
             var srv = serverList.get(srvId)[0];
 
-            // Für jede Kategorie/OberChannel
-            for(var j=0;j<srv.channels.length;j++){
-            
-                // Check ob Kategorie Subchannel hat
-                if(srv.channels[j].childChannels!=undefined && srv.channels[j].isCategory == true){
-                    // Für jeden SubChannel
-                    for(var x=0;x<srv.channels[j].childChannels.length;x++){
-                        var chnId = srv.channels[j].childChannels[x].id;
-                        var t = 'msg-srv:'+srvId+'-chn:'+chnId;
-                        console.log(t.length);
-                        // Message Empfänger hinzufügen
-                        // TODO anstatt t wahrscheinlich generisches event und über parameter channel und server bestimmen
-                        socket.on(t, (msg) => {
-                            console.log("msg");
-                        });
+            // Iteration durch Channels
+            for(var i=0;i<srv.channels.length;i++){
 
-                    }
+                // Iteration durch Sub Channels
+                for(var j=0;j<srv.channels[i].childChannels.length;j++){
+
+                    // ID des aktuellen Sub Channels
+                    let childID = srv.channels[i].childChannels[j].id;
+
+                    // Join Room TODO NUR DANN wenn der user zugriff auf channel hat
+                    socket.join(srvId+childID, () => {
+                        // Aufgerufen nachdem der Raum betreten wurde
+                    });
+
+                    // innere Funktion benötigt um Variable childID in diesem scope zu speichern
+                    // -> https://stackoverflow.com/questions/2900839/how-to-structure-javascript-callback-so-that-function-scope-is-maintained-proper
+                    (function(obj) { 
+                        socket.on('server:message:'+obj[0], (msg) => {
+  
+                        serverList.get(msg.serverId)[1].to(obj[1]+obj[0]).emit('server:message',msg);
+                        //TODO sende nur an user die zugriff auf den channel haben
+
+                        });
+                    })([childID,srvId]);
                 }
             }
 
-            socket.on('message:send', (msg) => {
-                console.log(msg);
-                socket.emit('message:hci:received',[userMe,msg]);
-            });
-
-            socket.on('prof:msg', (msg) => {
-                console.log(msg);
-                socket.emit('message:prof:received',[userMe,msg]);
-            });
-
-            console.log('Client '+socket.id+' connected to HCI.');
+            console.log('Client '+socket.id+' connected to '+srv.shortName);
         });
     }
 }
@@ -148,6 +139,20 @@ function initServerFunction(){
 /*
 //////////////////////////// Datenbank Server Init ////////////////////////////////////////
 */
+
+// Lade aktuelle UserListe von der Datenbank
+// Wird beim Server start einmal ausgeführt, ab dann nur noch geupdated
+function updateUserList(copsiDB){
+    copsiDB.collection("users").find({}).toArray(function(err, result) {
+        // TODO Handle Error
+        if (err) throw err;
+
+        for(var i=0;i<result.length;i++){
+            userList.set(result[i].id,result[i]);
+        }
+        updateServerList(copsiDB);
+    });
+}
 
 // Lade aktuelle Serverliste von der Datenbank
 // Wird beim Server start einmal ausgeführt, ab dann nur noch geupdated
@@ -166,7 +171,8 @@ function updateServerList(copsiDB){
             }
 
         }
-        initServerFunction();
+
+        updateSurList(copsiDB);
     });
 }
 
@@ -180,19 +186,8 @@ function updateSurList(copsiDB){
         for(var i=0;i<result.length;i++){
             surList.push(result[i]);
         }
-    });
-}
 
-// Lade aktuelle UserListe von der Datenbank
-// Wird beim Server start einmal ausgeführt, ab dann nur noch geupdated
-function updateUserList(copsiDB){
-    copsiDB.collection("users").find({}).toArray(function(err, result) {
-        // TODO Handle Error
-        if (err) throw err;
-
-        for(var i=0;i<result.length;i++){
-            userList.set(result[i].id,result[i]);
-        }
+        initServerFunction();
     });
 }
 
@@ -221,7 +216,6 @@ function sendUserServerInfo(copsiDB,user,socket){
 
                 // Check ob user ID mit dem aktuellen User und Server ID mit dem aktuell angeschauten Server übereinstimmen
                 if(surList[j].serverid===result[i].id){
-                    // surList[j].userid === user.id && 
 
                     // Erstellt und fügt User zum Server Objekt hinzu. In der DB werden diese nur durch Sur verbunden
                     var tmpUser = userList.get(surList[j].userid);

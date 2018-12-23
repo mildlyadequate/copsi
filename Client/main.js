@@ -8,8 +8,10 @@ const{app,BrowserWindow,Menu, ipcMain, dialog} = electron;
 const ioUrl = "http://localhost:8000";
 const io = require("socket.io-client");
 const ioClient = io.connect(ioUrl);
-// TODO zu speicherendes Server Objekt anpassen
+
+// Variables
 let serverList = new Map();
+let userMe;
 
 // Custom Modules
 const msgModule = require('../shared-objects/message-object.js');  
@@ -20,7 +22,6 @@ const utils = require('./custom-modules/utils.js');
 
 // Main Fenster
 let mainWindow;
-let loginWindow;
 
 // Main Fenster Größe
 let currentWidth = 1220;
@@ -34,19 +35,6 @@ let currentHeight = 630;
 app.on('ready', function(){
 
     require('devtron').install();
-
-    // ----- LOGIN WINDOW -----
-
-    loginWindow = createLoginWindow();
-
-    // Ready to show verhindert 'weißes aufblinken' wie man es vom browser kennt
-    loginWindow.once('ready-to-show', ()=>{
-        //loginWindow.show();
-    });
-
-    // Wenn Applikation geschlossen wird
-    loginWindow.on('closed', function(){
-    });
 
     // ----- MAIN WINDOW -----
 
@@ -64,26 +52,6 @@ app.on('ready', function(){
         app.quit();
     });
 });
-
-function createLoginWindow(){
-
-    var wndw = new BrowserWindow({
-        width: currentWidth, 
-        height: currentHeight,
-        backgroundColor:'#fff',
-        show: false,
-        title:'Copsi Login'
-    });
-
-    // Lade Login Form zuerst
-    wndw.loadURL(url.format({
-        pathname: path.join(__dirname, 'login-form.html'),
-        protocol:'file:',
-        slashes: true
-    }));
-
-    return wndw;
-}
 
 function createMainWindow(){
 
@@ -109,19 +77,17 @@ function createMainWindow(){
 //////////////////////////// IPC MAIN ////////////////////////////////////////
 */
 
+// Wenn User versucht sich einzuloggen sende Loginversuch an Server weiter
 ipcMain.on('user:login',function(e,loginData){
     ioClient.emit('user:login',[loginData[0],loginData[1]]);
 });
 
-ipcMain.on('server:message:send',function(e,obj){
-
-    var srvId = obj[0];
-    var chnId = obj[1];
-    var msg = obj[2];
-
-    var t = 'msg-srv:'+srvId+'-chn:'+chnId;
-    console.log(t.length);
-    ioClient.emit('msg-srv:'+srvId+'-chn:'+chnId, msg);
+// Wenn User eine Nachricht sendet, leite sie an Server weiter
+ipcMain.on('server:message:send',function(e,msg){
+    
+    // Server aus Serverliste finden mithilfe der ID obj[0]
+    serverList.get(msg.serverId)[0].emit('server:message:'+msg.channelId, msg);
+    
 });
 
 /*
@@ -139,30 +105,43 @@ ioClient.on('connect', function () {
 // Wenn eingeloggt
 ioClient.on("user:logged-in:personal-info", function(userData){
 
-    var user = userData[0];
+    userMe = userData[0];
     var serverData = userData[1];
 
-    console.log('Logged in');
+    console.log('Logged in as '+userMe.nickname);
 
     // Iteration durch alle Server dieses Users
     for(var i=0;i<serverData.length;i++){
         
         // Verbinde mit jedem Sub-Server aus der Liste und speichere in map
         var tmpServer = io.connect(ioUrl+'/'+serverData[i].id);
+
+        /*
+        for(var x=0;x<serverData[i].channels.length;x++){
+            for(var y=0;y<serverData[i].channels[x].childChannels.length;y++){
+                tmpServer.join(serverData[i].channels[x].childChannels[y].id, () => {
+                    //let rooms = Object.keys(socket.rooms);
+                    console.log("HAHA XD"); // [ <socket.id>, 'room 237' ]
+                    //io.to('room 237').emit('a new user has joined the room'); // broadcast to everyone in the room
+                });
+            }
+        }*/
+
+        // Wenn eine Nachricht auf diesem Server empfangen wird
+        tmpServer.on('server:message', (msg) => {
+            // Sende via ipc
+            mainWindow.webContents.send('server:message',msg);
+        });
+
+        // Zur Server Map hinzufügen
         serverList.set(serverData[i].id,[tmpServer,serverData[i]]);
     }
 
-    // TODO Use userdata
-
-    // TODO kombiniere beide in die gleiche function / in das gleiche 
-
-    //mainWindow.show();
-    //loginWindow.close();
     switchScreen('start-overview.html');
 
     // Sende ServerDaten via ipc wenn Fenster fertig geladen hat
     mainWindow.webContents.on('did-finish-load', function() {
-        mainWindow.webContents.send('user:personal-user-info',serverData);
+        mainWindow.webContents.send('user:personal-user-info',[serverData,userMe]);
     });
 });
 
@@ -178,7 +157,7 @@ ioClient.on('user:wrong-login:duplicate', () => {
 ioClient.on('user:wrong-login:password', () => {
     mainWindow.webContents.send('user:wrong-login:password');
 });
-  
+
 /*
 //////////////////////////// FUNCTIONS ////////////////////////////////////////
 */

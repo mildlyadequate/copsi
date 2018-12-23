@@ -12,6 +12,7 @@
   "dependencies": {
     "electron": "^3.0.12",
     "jquery": "^3.3.1",
+    "moment": "^2.23.0",
     "shortid": "^2.2.14",
     "socket.io": "^2.2.0"
   },
