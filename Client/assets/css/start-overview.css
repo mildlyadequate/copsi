@@ -9,6 +9,7 @@
 * {
     margin: 0;
     padding: 0;
+    transition: ease all .5s;
 }
 
 .sm-teams {
@@ -45,7 +46,7 @@
     display: inline-block;
 }
 .sm-server-shortname-container {
-    background-color: lightcyan;
+    background-color: red;
     border:2px solid black;
     border-radius: 7px;
     margin-left: 10px;

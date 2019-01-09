@@ -14,10 +14,12 @@ body, html {
 
 /* start overview: news scroll
     important: team, channels and members also need their own height!  */
+important: team, channels and members also need their own height!  */
 #sm-news-scroll {
     overflow-y: scroll;
     height: 300px;
 }
+} 
 
 /* ---------------------- Padding Fix ---------------------- */
 /* bulmas columns have negative margin by default, need to fix that by adding selfmade paddings
@@ -41,4 +43,8 @@ body, html {
     
 .sm-r {
     padding-right: 1.5rem;
+}
+
+.title {
+    font-weight: 500 !important;
 }

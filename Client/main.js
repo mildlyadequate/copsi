@@ -99,7 +99,7 @@ ioClient.on('connect', function () {
     mainWindow.webContents.send('server:connected');
 
     //TODO Dev / Remove
-    ioClient.emit('user:login',['sesc0043','seb123']);
+    ioClient.emit('user:login',['sesc0043','123']);
 });
 
 // Wenn eingeloggt

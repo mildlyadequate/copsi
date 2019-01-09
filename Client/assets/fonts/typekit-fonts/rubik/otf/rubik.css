@@ -1,0 +1,82 @@
+/** =================== Rubik =================== **/
+
+/** Rubik Light **/
+@font-face {
+    font-family: "Rubik";
+    font-weight: 300;
+    font-style: normal;
+    src: url("Rubik-Light.ttf") format('opentype');
+}
+
+/** Rubik Light-Italic **/
+@font-face {
+    font-family: "Rubik";
+    font-weight: 300;
+    font-style: italic;
+    src: url("Rubik-LightItalic.ttf") format('opentype');
+}
+
+/** Rubik Regular **/
+@font-face {
+    font-family: "Rubik";
+    font-weight: 400;
+    font-style: normal;
+    src: url("Rubik-Regular.ttf") format('opentype');
+}
+
+/** Rubik Regular-Italic **/
+@font-face {
+    font-family: "Rubik";
+    font-weight: 400;
+    font-style: italic;
+    src: url("Rubik-Italic.ttf") format('opentype');
+}
+
+/** Rubik Medium **/
+@font-face {
+    font-family: "Rubik";
+    font-weight: 500;
+    font-style: normal;
+    src: url("Rubik-Medium.ttf") format('opentype');
+}
+
+/** Rubik Medium-Italic **/
+@font-face {
+    font-family: "Rubik";
+    font-weight: 500;
+    font-style: italic;
+    src: url("Rubik-MediumItalic.ttf") format('opentype');
+}
+
+/** Rubik Bold **/
+@font-face {
+    font-family: "Rubik";
+    font-weight: 700;
+    font-style: normal;
+    src: url("Rubik-Bold.ttf") format('opentype');
+}
+
+/** Rubik Bold-Italic **/
+@font-face {
+    font-family: "Rubik";
+    font-weight: 700;
+    font-style: italic;
+    src: url("Rubik-BoldItalic.ttf") format('opentype');
+}
+
+/** Rubik Black **/
+@font-face {
+    font-family: "Rubik";
+    font-weight: 900;
+    font-style: normal;
+    src: url("Rubik-Black.ttf") format('opentype');
+}
+
+/** Rubik Black-Italic **/
+@font-face {
+    font-family: "Rubik";
+    font-weight: 900;
+    font-style: italic;
+    src: url("Rubik-BlackItalic.ttf") format('opentype');
+}
+
