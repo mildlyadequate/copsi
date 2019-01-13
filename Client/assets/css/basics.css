@@ -17,7 +17,6 @@ body, html {
 }
 
 
-
 /* ------------- Transition für die Texteingabe deaktiviert, Texteingabe hat .control
 aber idk ob die noch woanders verwenden werden soll 
 hat nicht funktioniert, Texteingabe übernimmt trotzdem transition
@@ -69,6 +68,15 @@ TODO: tranisitions --------------------------------- */
     background: #0ABBEF !important;
     color: white;
     /* shadow */
+}
+
+/* - Trenner zwischen Home Button und Server Buttons - */
+.sm-server-separator{
+    border-bottom: 3px solid #DADADA;
+    margin-bottom: 20px;
+    margin-left: 8px;
+    width: 34px;
+    border-radius: 8px;
 }
 
 /* todo: hover transition */
