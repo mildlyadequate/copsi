@@ -42,7 +42,7 @@ important: team, channels and members also need their own height!  */
 }
 
 .sm-team-icons {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .sm-activated {
@@ -60,6 +60,14 @@ important: team, channels and members also need their own height!  */
     border:2px solid black;
     border-radius: 7px;
     margin-left: 10px;
+}
+
+/* Trenner zwischen Home Button und Server Buttons */
+.sm-server-separator{
+    border-bottom: 1px solid #a0a0a0;
+    margin-bottom: 16px;
+    margin-left: 10px;
+    width: 44px;
 }
 
 /* kinda sucks please ignore

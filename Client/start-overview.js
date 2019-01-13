@@ -79,8 +79,33 @@ ipcRenderer.on('channel:receive:old-messages',function(e,messages){
 
   //TODO nur die letzten 50 Nachrichten laden (am besten schon im server)
   divMessageContainer.innerHTML = '';
-  for(var i=0;i<messages.length;i++){
-    divMessageContainer.appendChild(getMessageElement(messages[i]));
+
+  // Wenn keine Nachrichten vorhanden sind, zeige Bild + Nachricht
+  if(messages.length==0){
+
+    var tmp = document.createElement('div');
+    tmp.classList.add('level-item');
+    tmp.classList.add('has-text-centered');
+     
+    var icon = document.createElement('i');
+    icon.classList.add('fas');
+    icon.classList.add('fa-frown');
+
+    var separator = document.createElement('br');
+
+    var inner = document.createElement('p');
+    inner.innerText = "Noch keine Nachrichten vorhanden!";
+    tmp.appendChild(inner);
+    inner.appendChild(separator);
+    inner.appendChild(icon);
+
+    divMessageContainer.appendChild(tmp);
+  }else{
+
+    // Wenn Nachrichten vorhanden sind, füge sie dem div hinzu
+    for(var i=0;i<messages.length;i++){
+      divMessageContainer.appendChild(getMessageElement(messages[i]));
+    }
   }
 
   // Runter Scrollen
@@ -355,6 +380,11 @@ function getMessageElement(msg){
 /*
 //////////////////////////// User Interaction Functions ////////////////////////////////////////
 */
+
+// Aufgerufen durch Button oben links
+function openFrontpage(){
+  console.log("Öffne frontpage");
+}
 
 // Aufgerufen beim Start und wenn der Channel gewechselt wird
 function channelChanged(arg){
