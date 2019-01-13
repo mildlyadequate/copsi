@@ -150,25 +150,27 @@ function setServerList(serverData){
 
     // A Container Div
     var div = document.createElement('div');
-    div.classList.add('sm-server-shortname-container');
+    // Container Klasse braucht man nicht
+    // div.classList.add('sm-server-shortname-container');
     div.appendChild(aServerShort);
 
-    // Span
-    var spanServerShort = document.createElement('span');
-    spanServerShort.classList.add('icon');
-    spanServerShort.classList.add('is-medium');
-    spanServerShort.appendChild(div);
+    // Span - Span in der Serverliste ist überflüssig und zerschießt die Struktur
+    // var spanServerShort = document.createElement('span');
+    // spanServerShort.classList.add('icon');
+    // spanServerShort.classList.add('is-medium');
+    // spanServerShort.appendChild(div);
 
     // li
     var liServerShort = document.createElement('li');
-    liServerShort.appendChild(spanServerShort);
+    liServerShort.appendChild(div);
 
     // Äußerer Container
     var divServerShort = document.createElement('div');
     divServerShort.classList.add('sm-team-icons');
-    // Wenn Server der aktuell selektierte ist
+    // Wenn Server der aktuell selektierte ist 
+    // sm-activated wird a hinzugefügt, nicht div
     if(serverData[i].id == selectedServerId){
-      divServerShort.classList.add('sm-activated');
+      aServerShort.classList.add('sm-activated');
     }
     divServerShort.appendChild(liServerShort);
 

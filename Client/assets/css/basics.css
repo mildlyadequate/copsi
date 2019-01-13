@@ -1,6 +1,10 @@
 /* basic sheet used for every (!) "page" */
 
-
+* {
+    margin: 0;
+    padding: 0;
+    /*transition: ease all .5s;*/
+}
 
 /* ---------------------- Scrolling ---------------------- */
 /* reset overflow / scrollbar in body and html */
@@ -11,6 +15,18 @@ body, html {
     /* height should be 100vh
     section and columns height should be 100vh too */
 }
+
+
+
+/* ------------- Transition für die Texteingabe deaktiviert, Texteingabe hat .control
+aber idk ob die noch woanders verwenden werden soll 
+hat nicht funktioniert, Texteingabe übernimmt trotzdem transition
+TODO: tranisitions --------------------------------- */
+.sm-ea {
+    transition: none;
+}
+
+
 
 /* ---------------------- Padding Fix ---------------------- */
 /* bulmas columns have negative margin by default, need to fix that by adding selfmade paddings
@@ -38,4 +54,63 @@ body, html {
 
 .title {
     font-weight: 500 !important;
+}
+
+
+
+
+/* ---------------------- linker Abschnitt: Serverliste & Channels ---------------------- */
+/* - Serverliste - */
+.sm-team-icons {
+    margin-bottom: 20px;
+}
+
+.sm-activated {
+    background: #0ABBEF !important;
+    color: white;
+    /* shadow */
+}
+
+/* todo: hover transition */
+.sm-server-shortname {
+    background: #DADADA;
+    box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+    text-align: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: 500;
+}
+
+/* - Channels - */
+.sm-channels-header {
+    height:  48px;
+    border-bottom:  1px solid #a0a0a0;
+    margin-bottom: 16px;
+    /*margin-right: -12px;
+    padding-right: 12px; */
+}
+
+.sm-teams {
+    width: auto !important;
+    padding-right: 0px;
+}
+
+.sm-channel-list{
+    overflow-y: scroll;
+}
+
+
+
+/* ---------------------- Main Content (!) Header (!) ---------------------- */
+/* might delete later (bc of sm-channels-header) */
+.sm-content-header {
+    height:  48px;
+    border-bottom:  1px solid #a0a0a0;
+    margin-bottom: 16px;
 }

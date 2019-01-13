@@ -6,35 +6,6 @@
     #0CB0D7 blau
 */
 
-* {
-    margin: 0;
-    padding: 0;
-    /*transition: ease all .5s;*/
-}
-
-.sm-teams {
-    width: auto !important;
-}
-
-.sm-channels-header {
-    height:  48px;
-    border-bottom:  1px solid #a0a0a0;
-    margin-bottom: 16px;
-    /*margin-right: -12px;
-    padding-right: 12px; */
-}
-
-.sm-channel-list{
-    overflow-y: scroll;
-}
-
-/* might delete later (bc of sm-channels-header) */
-.sm-content-header {
-    height:  48px;
-    border-bottom:  1px solid #a0a0a0;
-    margin-bottom: 16px;
-}
-
 /* start overview: news scroll
 important: team, channels and members also need their own height!  */
 #sm-content {
@@ -55,6 +26,7 @@ important: team, channels and members also need their own height!  */
     width: 54px;
     display: inline-block;
 }
+/* Klasse kann raus 
 .sm-server-shortname-container {
     background-color: red;
     border:2px solid black;
@@ -80,4 +52,6 @@ important: team, channels and members also need their own height!  */
     height: 33px;
     /* transition: height .25s ease-in-out,margin-top .25s ease-in-out; 
     background: #69B22F;
+} */
+    margin-left: 10px; 
 } */
