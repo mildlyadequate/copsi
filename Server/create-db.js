@@ -22,6 +22,9 @@ const Role = roleModule.Role;
 // Server User Role Kombo Objekt
 const surModule = require('../shared-objects/server-user-role-object.js');  
 const Sur = surModule.Sur;
+// Channel Messages
+const channelMessagesModule = require('../shared-objects/channel-messages.js');  
+const ChannelMessages = channelMessagesModule.ChannelMessages;
 
 // Datenbank
 const dbName = "copsi";
@@ -36,6 +39,7 @@ const url = "mongodb://localhost:27017/"+dbName;
 let users = [];
 let servers = [];
 let surObjekte = [];
+let arrChannelMessages = [];
 
 // User
 let user1 = new User(shortid.generate(),'sesc0043','Sebastian Schuler',undefined,'27.11.2018','20.11.2014','profPic1');
@@ -89,6 +93,11 @@ bcrypt.hash("eis2018", 10, function(err, hash) {
   server1.password = hash;
 });
 
+// Server Passwort verschlüsseln und hinzufügen
+bcrypt.hash("123", 10, function(err, hash) {
+  server2.password = hash;
+});
+
 // Kombo Objekte
 let sur1 = new Sur(server1.id,user1.id,roleStud.id);
 let sur2 = new Sur(server1.id,user2.id,roleStud.id);
@@ -110,6 +119,21 @@ surObjekte.push(sur3);
 surObjekte.push(sur4);
 surObjekte.push(sur5);
 surObjekte.push(sur6);
+
+let channelMessages1 = new ChannelMessages(server1.id, cat1sub1.id, []);
+let channelMessages2 = new ChannelMessages(server1.id, cat2sub1.id, []);
+let channelMessages3 = new ChannelMessages(server1.id, cat2sub2.id, []);
+let channelMessages4 = new ChannelMessages(server1.id, cat2sub3.id, []);
+let channelMessages5 = new ChannelMessages(server1.id, cat3sub1.id, []);
+let channelMessages6 = new ChannelMessages(server1.id, cat3sub2.id, []);
+
+arrChannelMessages.push(channelMessages1);
+arrChannelMessages.push(channelMessages2);
+arrChannelMessages.push(channelMessages3);
+arrChannelMessages.push(channelMessages4);
+arrChannelMessages.push(channelMessages5);
+arrChannelMessages.push(channelMessages6);
+
 
 /*
 //////////////////////////// Create Database ////////////////////////////////////////
@@ -142,6 +166,12 @@ MongoClient.connect(url, function(err, db) {
     dbo.collection("sur").insertMany(surObjekte, function(err, res) {
       if (err) throw err;
       console.log("Number of surs inserted: " + res.insertedCount);
+    });
+
+    // Füge Channel Messages hinzu
+    dbo.collection("channel-messages").insertMany(arrChannelMessages, function(err, res) {
+      if (err) throw err;
+      console.log("Number of Channel-Messages inserted: " + res.insertedCount);
     });
 
     db.close();

@@ -1,0 +1,17 @@
+anonym: generierte namen, ändern bei login/24hr
+
+änderungsbutton: alles auf einem platz
+
+darkmode? optional aber würde genutzt werden
+
+usericons
+lieber aus liste picken als selbst hochzuladen
+
+in priv msg
+'tags' als kategorien
+
+vorlesungs reihenfolge ändern
+
+farben für vorlesungs icons
+
+farben für teilnehmerliste

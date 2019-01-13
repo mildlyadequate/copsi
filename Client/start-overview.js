@@ -10,9 +10,12 @@ const Message = msgModule.Message;
 
 // Server Display Elemente
 const divServerUserList = document.getElementById('divServerUserList');
-const navServerChannelList = document.getElementById('channelList');
+const navServerChannelList = document.getElementById('sm-channel-list');
 const ulServerListLeft = document.getElementById('serverListeLinks');
+
+const divContentScroll = document.getElementById('sm-content');
 const divMessageContainer = document.getElementById('divMessageContainer');
+
 const txaMessage = document.getElementById('txaMessage');
 
 // Variablen
@@ -23,6 +26,14 @@ let serverDataObject;
 let userMe;
 
 // IPC 
+
+// Window resize
+ipcRenderer.on('window:resize',function(e,height){
+  // Trial error value of 186 depends on navbar, infobar and taskbar
+  var newHeight = height - 380;
+  divContentScroll.style.height = (height - 380)+'px';
+  navServerChannelList.style.height = (height - 140)+'px';
+});
 
 // Wenn verbindung zu server hergestellt wurde
 ipcRenderer.on('server:connected',function(e){
@@ -41,7 +52,7 @@ ipcRenderer.on('user:personal-user-info',function(e,initObject){
   // Variablen um aktuell selektierten Server/Channel zu merken
   selectedServerId = serverData[0].id;
   //TODO wechsel aktuellen channel
-  selectedChannelId = serverData[0].channels[1].childChannels[0].id;
+  channelChanged(serverData[0].channels[1].childChannels[0]);
 
   // Auf globale Variable setzen
   serverDataObject = serverData;
@@ -59,7 +70,23 @@ ipcRenderer.on('server:message',function(e,msg){
     divMessageContainer.appendChild(getMessageElement(msg));
   }
 
+  // Runter Scrollen
+  divContentScroll.scrollTop = divContentScroll.scrollHeight;
 });
+
+// Empfange alte Nachrichten nachdem der Channel geändert wurde
+ipcRenderer.on('channel:receive:old-messages',function(e,messages){
+
+  //TODO nur die letzten 50 Nachrichten laden (am besten schon im server)
+  divMessageContainer.innerHTML = '';
+  for(var i=0;i<messages.length;i++){
+    divMessageContainer.appendChild(getMessageElement(messages[i]));
+  }
+
+  // Runter Scrollen
+  divContentScroll.scrollTop = divContentScroll.scrollHeight;
+});
+
 
 /*
 //////////////////////////// Interface Creation Functions ////////////////////////////////////////
@@ -130,8 +157,8 @@ function setServerTitle(title){
   document.getElementById('hServerTitle').innerText = title;
 }
 
-// Nutzer des Servers darstellen
-function setServerChannels(channels){
+// Channel des Servers darstellen
+function setChannels(channels){
 
   // Für jeden Channel
   for(var i=0;i<channels.length;i++){
@@ -177,9 +204,9 @@ function setServerChannels(channels){
           aChildChannelLink.onclick = function(arg) {
             return function() {
               // TODO Channel ändern und alte nachrichten laden
-              divMessageContainer.innerHTML = '';
+              channelChanged(arg);
             }
-          }('xd');
+          }(tmpChildChannels[j]);
 
           // List Element
           var liChildChannel = document.createElement('li');
@@ -329,6 +356,15 @@ function getMessageElement(msg){
 //////////////////////////// User Interaction Functions ////////////////////////////////////////
 */
 
+// Aufgerufen beim Start und wenn der Channel gewechselt wird
+function channelChanged(arg){
+  divMessageContainer.innerHTML = '';
+  selectedChannelId = arg.id;
+  txaMessage.placeholder = 'Nachricht an @'+arg.name;
+  // Event senden um alte Nachrichten zu laden
+  ipcRenderer.send('channel:get:old-messages',[selectedServerId,arg.id]);
+}
+
 // Enter taste macht neue zeile killme
 function onMessageEnterPressed(e){
   if(e.keyCode==13){
@@ -360,7 +396,7 @@ function serverChanged(selectedServer){
 
       // UI erstellen
       setServerTitle(serverDataObject[i].shortName);
-      setServerChannels(serverDataObject[i].channels);
+      setChannels(serverDataObject[i].channels);
       setServerUserList(serverDataObject[i]);
     }
   }

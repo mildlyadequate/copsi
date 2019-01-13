@@ -12,14 +12,6 @@ body, html {
     section and columns height should be 100vh too */
 }
 
-/* start overview: news scroll
-    important: team, channels and members also need their own height!  */
-#sm-news-scroll {
-    overflow-y: scroll;
-    height: 300px;
-}
-
-
 /* ---------------------- Padding Fix ---------------------- */
 /* bulmas columns have negative margin by default, need to fix that by adding selfmade paddings
     (please dont rant just go with it ok)

@@ -44,6 +44,7 @@ app.on('ready', function(){
     // Ready to show verhindert 'weißes aufblinken' wie man es vom browser kennt
     mainWindow.once('ready-to-show', ()=>{
        mainWindow.show();
+       mainWindow.webContents.send('window:resize', currentHeight);
        mainWindow.webContents.openDevTools();
     });
 
@@ -58,6 +59,8 @@ function createMainWindow(){
     var wndw = new BrowserWindow({
         width: currentWidth, 
         height: currentHeight,
+        minHeight: 550,
+        minWidth: 1050,
         backgroundColor:'#fff',
         show: false,
         title:'Copsi'
@@ -69,6 +72,15 @@ function createMainWindow(){
         protocol:'file:',
         slashes: true
     }));
+
+    // Send current height on resize to adjust scrollbar
+    wndw.on('resize', function(e){
+        var height = mainWindow.getSize()[1];
+        if(currentHeight != height){
+            currentHeight = height;
+            mainWindow.webContents.send('window:resize', height);
+        }
+    });
 
     return wndw;
 }
@@ -88,6 +100,14 @@ ipcMain.on('server:message:send',function(e,msg){
     // Server aus Serverliste finden mithilfe der ID obj[0]
     serverList.get(msg.serverId)[0].emit('server:message:'+msg.channelId, msg);
     
+});
+
+// Wenn ein Channel geladen werden soll fordert dieses Event den Server auf
+ipcMain.on('channel:get:old-messages',function(e,tmpInfo){
+    
+    // tmpInfo = [serverId,channelId]
+    serverList.get(tmpInfo[0])[0].emit('channel:get:old-messages',tmpInfo);
+
 });
 
 /*
@@ -131,6 +151,11 @@ ioClient.on("user:logged-in:personal-info", function(userData){
         tmpServer.on('server:message', (msg) => {
             // Sende via ipc
             mainWindow.webContents.send('server:message',msg);
+        });
+
+        // Bekomme alte Nachrichten des aktuell selektierten Channels
+        tmpServer.on('channel:receive:old-messages', (messages) => {
+            mainWindow.webContents.send('channel:receive:old-messages',messages);
         });
 
         // Zur Server Map hinzufügen

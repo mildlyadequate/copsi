@@ -90,7 +90,7 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
     });
 });
 
-function initServerFunction(){
+function initServerFunction(copsiDB){
 
     // Erstelle Events für jeden Server der Servermap
     // TODO Listener aus Server Objekt erstellen
@@ -122,14 +122,45 @@ function initServerFunction(){
                     // -> https://stackoverflow.com/questions/2900839/how-to-structure-javascript-callback-so-that-function-scope-is-maintained-proper
                     (function(obj) { 
                         socket.on('server:message:'+obj[0], (msg) => {
-  
-                        serverList.get(msg.serverId)[1].to(obj[1]+obj[0]).emit('server:message',msg);
-                        //TODO sende nur an user die zugriff auf den channel haben
+
+                            serverList.get(msg.serverId)[1].to(obj[1]+obj[0]).emit('server:message',msg);
+                            //TODO sende nur an user die zugriff auf den channel haben
+
+                            (function(dbMsg) { 
+
+                                var tmpChannelId = dbMsg.channelId;
+                                var tmpServerId = dbMsg.serverId;
+
+                                // Lösche redundante Daten
+                                delete dbMsg.channelId;
+                                delete dbMsg.serverId;
+
+                                // Sende Nachricht an Datenbank
+                                copsiDB.collection("channel-messages").updateOne(
+                                    {"channelId" : tmpChannelId, "serverId" : tmpServerId},
+                                    { "$push": { messages:dbMsg}},
+                                    function(err, res) {
+                                        if (err) throw err;
+                                    }
+                                )
+                            })(msg);
 
                         });
                     })([childID,srvId]);
                 }
             }
+
+            // Aufgerufen wenn Nachrichten eines Channels angefordert werden
+            socket.on('channel:get:old-messages', (tmpInfo) => {
+
+                let query = { channelId: tmpInfo[1], serverId: tmpInfo[0]};
+                copsiDB.collection("channel-messages").find(query).toArray(function(err, result) {
+
+                    serverList.get(tmpInfo[0])[1].to(tmpInfo[0]+tmpInfo[1]).emit('channel:receive:old-messages',result[0].messages);
+
+                });
+
+            });
 
             console.log('Client '+socket.id+' connected to '+srv.shortName);
         });
@@ -187,7 +218,7 @@ function updateSurList(copsiDB){
             surList.push(result[i]);
         }
 
-        initServerFunction();
+        initServerFunction(copsiDB);
     });
 }
 
