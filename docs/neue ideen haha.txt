@@ -1,17 +1,20 @@
-anonym: generierte namen, ändern bei login/24hr
+anonym: generierte namen (wie bei google docs), ändern bei login/24hr
 
-änderungsbutton: alles auf einem platz
+änderungsbutton: alles auf einem platz anstatt 'edit' icon an jedem channel wäre 
+übersichtlicher für leute die keine ahnung haben
 
-darkmode? optional aber würde genutzt werden
+darkmode? optional aber würde auf jeden fall genutzt werden
 
-usericons
-lieber aus liste picken als selbst hochzuladen
+usericons / bilder
+lieber aus vordefinierte liste picken als selbst hochzuladen
 
-in priv msg
+in priv msg, damit prof übersicht behalten kann und das zuspammen nicht zu viel wird:
 'tags' als kategorien
 
-vorlesungs reihenfolge ändern
+vorlesungs reihenfolge ändern (linke seite)
 
-farben für vorlesungs icons
+farben für vorlesungs icons selbst anpassen können (mit standardfarben am anfang)
 
-farben für teilnehmerliste
+farben für teilnehmerliste (jeden teilnehmer farbig je nach rolle: bsp. prof rot, student blau etc)
+
+klausur / kalenderdaten standardmäßig anzeigen aber mit klick permanent verstecken können bis vom user wieder aufgeklappt wird
