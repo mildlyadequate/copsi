@@ -1,9 +1,22 @@
+/*
+    Hochschul Farben Logo:
+    #69B22F grün
+    #006C55 dunkelgrün
+    #237D87 teal
+    #0CB0D7 blau
+*/
+
 /* basic sheet used for every (!) "page" */
 
 * {
     margin: 0;
     padding: 0;
     /*transition: ease all .5s;*/
+}
+
+/* Klasse wird benutzt um Elemente zu verstecken */
+.hide{
+    display: none !important;
 }
 
 /* ---------------------- Scrolling ---------------------- */
@@ -24,8 +37,6 @@ TODO: tranisitions --------------------------------- */
 .sm-ea {
     transition: none;
 }
-
-
 
 /* ---------------------- Padding Fix ---------------------- */
 /* bulmas columns have negative margin by default, need to fix that by adding selfmade paddings
@@ -113,12 +124,14 @@ TODO: tranisitions --------------------------------- */
     overflow-y: scroll;
 }
 
-
-
 /* ---------------------- Main Content (!) Header (!) ---------------------- */
 /* might delete later (bc of sm-channels-header) */
 .sm-content-header {
     height:  48px;
     border-bottom:  1px solid #a0a0a0;
     margin-bottom: 16px;
+}
+
+#sm-content-chat {
+    overflow-y: auto;
 }

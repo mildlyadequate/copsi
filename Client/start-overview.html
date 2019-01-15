@@ -77,7 +77,7 @@
           <div class="level">
             <div class="level-left">
               <div class="level-item">
-                <div class="title">
+                <div id="sm-channel-title" class="title">
                   <i class="fas fa-file-alt"></i>
                   Neuigkeiten
                 </div>
@@ -113,8 +113,30 @@
           </div>
         </div>
 
-        <!-- news: cards -->
-        <div class="columns" id="sm-content">
+        <!-- Main Content: Files -->
+        <div id="sm-content-files" class="columns hide">
+          <div class="column">
+
+            <!-- table -->
+            <table class="table is-fullwidth is-hoverable">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Name</th>
+                  <th>Größe</th>
+                  <th>Geändert</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="fileContainer">
+                <!-- Dateien werden hier eingefügt -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Main Content: Chat -->
+        <div id="sm-content-chat" class="columns">
           <div id="divMessageContainer" class="column">
 
             <!-- Ausgeblendet, anonyme Nachricht test-->
