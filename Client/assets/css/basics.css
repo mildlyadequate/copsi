@@ -27,6 +27,11 @@ body, html {
     height: 100%;
     /* height should be 100vh
     section and columns height should be 100vh too */
+    font-family: Karla !important;
+}
+
+.title {
+    font-family: Rubik !important;
 }
 
 
@@ -128,7 +133,6 @@ TODO: tranisitions --------------------------------- */
 /* might delete later (bc of sm-channels-header */
 .sm-content-header {
     height:  48px;
-    border-bottom:  1px solid #a0a0a0;
     margin-bottom: 16px;
 }
 
@@ -146,6 +150,21 @@ TODO: sm-content sollte keine id sein, man kann es in jedem "content" verwenden 
 .sm-content {
     overflow-y: auto;
 }
+
+
+/*
+empty content img: */
+.sm-img {
+    display: block;
+    margin: auto;
+}
+
+/*
+das äußerste columns kriegt noch, ansonsten entfernt: (klappt nur wenn dieses columns ne höhe hat :( )
+xxx {
+    -webkit-box-align: center;
+    align-items: center;
+} */
 
 
 
