@@ -20,6 +20,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Studienprojekt</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/basics.css">
   <link rel="stylesheet" type="text/css" href="02-start-overview.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
@@ -75,7 +76,7 @@
 
       <!-- side menu -->
       <aside class="column is-2 aside sm-t sm-b">
-        <div class="sm-teams-header">
+        <div class="sm-content-header">
           <h1 class="title">HCI</h1>
         </div>
 
@@ -95,7 +96,7 @@
           </p>
           <ul class="menu-list">
             <li>
-              <a class="is-active" href="#">
+              <a class="is-active is-rounded" href="#">
                 <span class="icon is-small">
                   <i class="fas fa-book"></i>
               </span>
@@ -187,7 +188,7 @@
         ------------alles ab dem folgenden div .columns ----------------------------->
 
         <!-- news: cards -->
-        <div class="columns">
+        <div class="columns sm-content">
           <div class="column">
 
             <!-- table -->
@@ -246,6 +247,15 @@
                  </tr>
               </tbody>
             </table>
+
+            <div class="buttons is-right">
+                  <a class="button sm-activated sm-btn is-rounded">
+                      <span class="icon is-small">
+                        <i class="fas fa-plus"></i>
+                      </span>
+                      <span>Hochladen</span>
+                    </a>
+            </div>
 
           </div>
         </div>
