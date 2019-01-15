@@ -105,6 +105,7 @@ function initServerFunction(copsiDB){
             var srv = serverList.get(srvId)[0];
 
             // Iteration durch Channels
+            // TODO Momentan muss jeder richtige channel in einem oberchannel existieren -> keine channel auf der ersten ebene möglich
             for(var i=0;i<srv.channels.length;i++){
 
                 // Iteration durch Sub Channels

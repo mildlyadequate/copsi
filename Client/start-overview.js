@@ -13,9 +13,11 @@ const divServerUserList = document.getElementById('divServerUserList');
 const navServerChannelList = document.getElementById('sm-channel-list');
 const ulServerListLeft = document.getElementById('serverListeLinks');
 
+// Content
 const divContentScroll = document.getElementById('sm-content');
 const divMessageContainer = document.getElementById('divMessageContainer');
 
+// Textfeld
 const txaMessage = document.getElementById('txaMessage');
 
 // Variablen
@@ -51,8 +53,6 @@ ipcRenderer.on('user:personal-user-info',function(e,initObject){
 
   // Variablen um aktuell selektierten Server/Channel zu merken
   selectedServerId = serverData[0].id;
-  //TODO wechsel aktuellen channel
-  channelChanged(serverData[0].channels[1].childChannels[0]);
 
   // Auf globale Variable setzen
   serverDataObject = serverData;
@@ -60,6 +60,13 @@ ipcRenderer.on('user:personal-user-info',function(e,initObject){
   // Serverliste erstellen und server selektieren
   setServerList(serverData);
   serverChanged(selectedServerId);
+
+  // Aktuellen Channel wechseln TODO: dynamisch den ersten channel erkennen
+  selectFirstChannel();
+
+  // Markiere selektierten Channel
+  var newSelected = document.getElementById('srvObj_'+selectedServerId);
+  newSelected.classList.add('sm-activated');
 });
 
 // Wenn eine Nachricht empfangen wurde
@@ -80,28 +87,13 @@ ipcRenderer.on('channel:receive:old-messages',function(e,messages){
   //TODO nur die letzten 50 Nachrichten laden (am besten schon im server)
   divMessageContainer.innerHTML = '';
 
+  if()
+
   // Wenn keine Nachrichten vorhanden sind, zeige Bild + Nachricht
+  // TODO verschwindet nicht wenn eine Nachricht geschickt wird
   if(messages.length==0){
-
-    var tmp = document.createElement('div');
-    tmp.classList.add('level-item');
-    tmp.classList.add('has-text-centered');
-     
-    var icon = document.createElement('i');
-    icon.classList.add('fas');
-    icon.classList.add('fa-frown');
-
-    var separator = document.createElement('br');
-
-    var inner = document.createElement('p');
-    inner.innerText = "Noch keine Nachrichten vorhanden!";
-    tmp.appendChild(inner);
-    inner.appendChild(separator);
-    inner.appendChild(icon);
-
-    divMessageContainer.appendChild(tmp);
+    showEmptyChannelIcon();
   }else{
-
     // Wenn Nachrichten vorhanden sind, füge sie dem div hinzu
     for(var i=0;i<messages.length;i++){
       divMessageContainer.appendChild(getMessageElement(messages[i]));
@@ -130,6 +122,27 @@ function clearServerInterface(){
   divMessageContainer.innerHTML = '';
 }
 
+// Wird angezeigt wenn keine Nachrichten in einem Channel existieren
+function showEmptyChannelIcon(){
+  var tmp = document.createElement('div');
+  tmp.classList.add('level-item');
+  tmp.classList.add('has-text-centered');
+   
+  var icon = document.createElement('i');
+  icon.classList.add('fas');
+  icon.classList.add('fa-frown');
+
+  var separator = document.createElement('br');
+
+  var inner = document.createElement('p');
+  inner.innerText = "Noch keine Nachrichten vorhanden!";
+  tmp.appendChild(inner);
+  inner.appendChild(separator);
+  inner.appendChild(icon);
+
+  divMessageContainer.appendChild(tmp);
+}
+
 // Serverliste ganz links anzeigen
 function setServerList(serverData){
 
@@ -139,9 +152,9 @@ function setServerList(serverData){
     var aServerShort = document.createElement('a');
     aServerShort.classList.add('sm-server-shortname');
     aServerShort.innerText = serverData[i].shortName;
-
     // Onclick in for Schleife muss so aussehen weil: https://stackoverflow.com/questions/6048561/setting-onclick-to-use-current-value-of-variable-in-loop
     var srvId = serverData[i].id;
+    aServerShort.id = 'srvObj_'+srvId;
     aServerShort.onclick = function(arg) {
       return function() {
         serverChanged(arg);
@@ -226,6 +239,7 @@ function setChannels(channels){
 
           // Link
           var aChildChannelLink = document.createElement('a');
+          aChildChannelLink.id = 'chnObj_'+tmpChildChannels[j].id;
           aChildChannelLink.href = '#';
           aChildChannelLink.innerHTML = tmpDiv.innerHTML + ' ' + tmpChildChannels[j].name;
           aChildChannelLink.onclick = function(arg) {
@@ -390,8 +404,21 @@ function openFrontpage(){
 
 // Aufgerufen beim Start und wenn der Channel gewechselt wird
 function channelChanged(arg){
+
+  // Leere Message Container
   divMessageContainer.innerHTML = '';
+
+  // Selektierten Channel ändern
+  var oldSelected = document.getElementById('chnObj_'+selectedChannelId);
+  if(oldSelected!=null){
+    oldSelected.classList.remove('sm-activated');
+  }
+  var newSelected = document.getElementById('chnObj_'+arg.id);
+  newSelected.classList.add('sm-activated');
+
+  // Setze selektierte channel variable
   selectedChannelId = arg.id;
+
   txaMessage.placeholder = 'Nachricht an @'+arg.name;
   // Event senden um alte Nachrichten zu laden
   ipcRenderer.send('channel:get:old-messages',[selectedServerId,arg.id]);
@@ -411,13 +438,19 @@ function onMessageEnterPressed(e){
 }
 
 // Wird aufgerufen um den aktuell gezeigten Server zu ändern
-function serverChanged(selectedServer){
+function serverChanged(newSelectedServer){
 
   // Alle dynamischen container leeren
   clearServerInterface();
 
+  // Selektierten Server ändern
+  var newSelected = document.getElementById('srvObj_'+newSelectedServer);
+  newSelected.classList.add('sm-activated');
+  var oldSelected = document.getElementById('srvObj_'+selectedServerId);
+  oldSelected.classList.remove('sm-activated');
+
   // Globale Variable ändern
-  selectedServerId = selectedServer;
+  selectedServerId = newSelectedServer;
 
   // Gehe durch Server Liste um aktuell selektierten zu finden
   for(var i=0;i<serverDataObject.length;i++){
@@ -430,6 +463,14 @@ function serverChanged(selectedServer){
       setServerTitle(serverDataObject[i].shortName);
       setChannels(serverDataObject[i].channels);
       setServerUserList(serverDataObject[i]);
+
+      selectFirstChannel();
     }
   }
+}
+
+// Selektiert den ersten Channel des Servers, aufgerufen beim start und wenn 
+function selectFirstChannel(){
+  selectedChannelId = serverDataObject[0].channels[0].childChannels[0];
+  channelChanged(selectedChannelId);
 }
