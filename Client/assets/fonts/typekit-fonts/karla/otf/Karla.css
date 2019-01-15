@@ -1,0 +1,36 @@
+/** =================== Karla =================== **/
+
+
+/** Karla Regular **/
+@font-face {
+    font-family: "Karla";
+    font-weight: 400;
+    font-style: normal;
+    src: url("Karla-Regular.ttf") format('opentype');
+}
+
+/** Karla Regular-Italic **/
+@font-face {
+    font-family: "Karla";
+    font-weight: 400;
+    font-style: italic;
+    src: url("Karla-Italic.ttf") format('opentype');
+}
+
+/** Karla Bold **/
+@font-face {
+    font-family: "Karla";
+    font-weight: 700;
+    font-style: normal;
+    src: url("Karla-Bold.ttf") format('opentype');
+}
+
+/** Karla Bold-Italic **/
+@font-face {
+    font-family: "Karla";
+    font-weight: 700;
+    font-style: italic;
+    src: url("Karla-BoldItalic.ttf") format('opentype');
+}
+
+
