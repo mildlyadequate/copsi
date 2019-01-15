@@ -3,10 +3,13 @@ const electron = require('electron');
 const shortid = require('shortid');
 const moment = require('moment');
 const {ipcRenderer,shell,Menu} = electron;
+const initialWindowHeight = 630;
 
 // Custom Modules
 const msgModule = require('../shared-objects/message-object.js');  
 const Message = msgModule.Message;
+const chnModule = require('../shared-objects/channel-object.js');  
+const Channel = chnModule.Message;
 
 // Server Display Elemente
 const divServerUserList = document.getElementById('divServerUserList');
@@ -14,8 +17,11 @@ const navServerChannelList = document.getElementById('sm-channel-list');
 const ulServerListLeft = document.getElementById('serverListeLinks');
 
 // Content
-const divContentScroll = document.getElementById('sm-content');
+const divchannelTitle = document.getElementById('sm-channel-title');
+const divContentChat = document.getElementById('sm-content-chat');
+const divContentFiles = document.getElementById('sm-content-files');
 const divMessageContainer = document.getElementById('divMessageContainer');
+const fileContainer = document.getElementById('fileContainer');
 
 // Textfeld
 const txaMessage = document.getElementById('txaMessage');
@@ -25,16 +31,17 @@ let selectedServerObject;
 let selectedServerId = '';
 let selectedChannelId = '';
 let serverDataObject;
+
+// Me
 let userMe;
+let roleMe;
 
 // IPC 
 
 // Window resize
 ipcRenderer.on('window:resize',function(e,height){
   // Trial error value of 186 depends on navbar, infobar and taskbar
-  var newHeight = height - 380;
-  divContentScroll.style.height = (height - 380)+'px';
-  navServerChannelList.style.height = (height - 140)+'px';
+  resizeContainers(height);
 });
 
 // Wenn verbindung zu server hergestellt wurde
@@ -46,6 +53,8 @@ ipcRenderer.on('server:connected',function(e){
 
 // bei login gesendet von server, enthält alle nötigen serverdaten
 ipcRenderer.on('user:personal-user-info',function(e,initObject){
+
+  resizeContainers(initialWindowHeight);
 
   // Server Objekt und eigenes User Objekt
   var serverData = initObject[0];
@@ -78,7 +87,7 @@ ipcRenderer.on('server:message',function(e,msg){
   }
 
   // Runter Scrollen
-  divContentScroll.scrollTop = divContentScroll.scrollHeight;
+  divContentChat.scrollTop = divContentChat.scrollHeight;
 });
 
 // Empfange alte Nachrichten nachdem der Channel geändert wurde
@@ -87,7 +96,7 @@ ipcRenderer.on('channel:receive:old-messages',function(e,messages){
   //TODO nur die letzten 50 Nachrichten laden (am besten schon im server)
   divMessageContainer.innerHTML = '';
 
-  if()
+  //if() TODO Check channel type
 
   // Wenn keine Nachrichten vorhanden sind, zeige Bild + Nachricht
   // TODO verschwindet nicht wenn eine Nachricht geschickt wird
@@ -101,7 +110,7 @@ ipcRenderer.on('channel:receive:old-messages',function(e,messages){
   }
 
   // Runter Scrollen
-  divContentScroll.scrollTop = divContentScroll.scrollHeight;
+  divContentChat.scrollTop = divContentChat.scrollHeight;
 });
 
 
@@ -157,7 +166,10 @@ function setServerList(serverData){
     aServerShort.id = 'srvObj_'+srvId;
     aServerShort.onclick = function(arg) {
       return function() {
-        serverChanged(arg);
+        // Check ob der Server schon angewählt ist
+        if(arg!=selectedServerId){
+          serverChanged(arg);
+        }
       }
     }(srvId);
 
@@ -393,35 +405,153 @@ function getMessageElement(msg){
   return divBox;
 }
 
+// Erstellt ein File ELement in html
+function getFileElement(fileMetainfo){
+  var fileIcon = document.createElement('i');
+  fileIcon.classList.add('fas');
+  fileIcon.classList.add('fa-file-pdf');
+
+  var thFileIcon = document.createElement('th');
+  thFileIcon.appendChild(fileIcon);
+
+  var tdName = document.createElement('td');
+  tdName.innerText = '00_Intro';
+
+  var tdSize = document.createElement('td');
+  tdSize.innerText = '795.0 kB';
+
+  var tdTimestamp = document.createElement('td');
+  tdTimestamp.innerText = '24.09.2018 11:17';
+
+  var downloadIcon = document.createElement('i');
+  downloadIcon.classList.add('fas');
+  downloadIcon.classList.add('fa-download');
+
+  var thDownloadIcon = document.createElement('th');
+  thDownloadIcon.appendChild(downloadIcon);
+
+  var trContainer = document.createElement('tr');
+  trContainer.appendChild(thFileIcon);
+  trContainer.appendChild(tdName);
+  trContainer.appendChild(tdSize);
+  trContainer.appendChild(tdTimestamp);
+  trContainer.appendChild(thDownloadIcon);
+
+  return trContainer;
+}
+
 /*
 //////////////////////////// User Interaction Functions ////////////////////////////////////////
 */
+
+// Aufgerufen jedesmal wenn sich die Größe des Fensters ändert, einmal beim Start 
+function resizeContainers(height){
+  divContentChat.style.height = (height - 380)+'px';
+  navServerChannelList.style.height = (height - 140)+'px';
+}
 
 // Aufgerufen durch Button oben links
 function openFrontpage(){
   console.log("Öffne frontpage");
 }
 
+// Lade die aktuelle Rolle des eingeloggten Users
+function getMyCurrentRole(){
+
+  // Finde selektierten Server
+  for(var j=0;j<serverDataObject.length;j++){
+    if(serverDataObject[j].id==selectedServerId){
+      
+      // Finde eingeloggten User
+      for(var i=0;i<serverDataObject[j].users.length;i++){
+        if(serverDataObject[j].users[i].id==userMe.id){
+
+          // Setze Variable
+          roleMe = serverDataObject[j].users[i].role;
+
+        }
+      }
+    }
+  }
+}
+
 // Aufgerufen beim Start und wenn der Channel gewechselt wird
 function channelChanged(arg){
+
+  // Setze Channel Namen
+  divchannelTitle.innerText = arg.name;
 
   // Leere Message Container
   divMessageContainer.innerHTML = '';
 
   // Selektierten Channel ändern
   var oldSelected = document.getElementById('chnObj_'+selectedChannelId);
-  if(oldSelected!=null){
+  if(oldSelected != null){
     oldSelected.classList.remove('sm-activated');
   }
   var newSelected = document.getElementById('chnObj_'+arg.id);
-  newSelected.classList.add('sm-activated');
+  if(newSelected != null){
+    newSelected.classList.add('sm-activated');
+  }
 
   // Setze selektierte channel variable
   selectedChannelId = arg.id;
 
-  txaMessage.placeholder = 'Nachricht an @'+arg.name;
-  // Event senden um alte Nachrichten zu laden
-  ipcRenderer.send('channel:get:old-messages',[selectedServerId,arg.id]);
+  // Channel Typ CHAT
+  if(arg.type==chnModule.type.chat){
+
+    // Elemente einblenden
+    divContentChat.classList.remove('hide');
+    txaMessage.classList.remove('hide');
+    // Elemente ausblenden
+    divContentFiles.classList.add('hide');
+
+    // Platzhalter im Textfeld ändern
+    txaMessage.placeholder = 'Nachricht an @'+arg.name;
+
+    // Event senden um alte Nachrichten zu laden
+    ipcRenderer.send('channel:get:old-messages',[selectedServerId,arg.id]);
+
+  // Channel Typ FILES
+  }else if(arg.type==chnModule.type.files){
+
+      // Elemente einblenden
+      txaMessage.classList.add('hide');
+      divContentChat.classList.add('hide');
+      // Elemente ausblenden
+      divContentFiles.classList.remove('hide');
+
+      // Check welche Rechte dieser User hat
+      if(arg.roleAbility.fileupload.includes(roleMe)){
+        //TODO upload button einfügen
+
+
+
+
+
+      }
+
+  // Channel Typ NEWS
+  }else if(arg.type==chnModule.type.news){
+
+    //TODO wenn aktueller user schreibrechte hat dann zeige chatbox
+    // Elemente einblenden
+    divContentChat.classList.remove('hide');
+    // Elemente ausblenden
+    divContentFiles.classList.add('hide');
+
+  // Channel Typ ANONCHAT
+  }else if(arg.type==chnModule.type.anonchat){
+
+    // Elemente einblenden
+    divContentChat.classList.remove('hide');
+    txaMessage.classList.remove('hide');
+    // Elemente ausblenden
+    divContentFiles.classList.add('hide');
+
+    // Platzhalter im Textfeld ändern
+    txaMessage.placeholder = 'Nachricht an @'+arg.name;
+  }
 }
 
 // Enter taste macht neue zeile killme
@@ -467,6 +597,8 @@ function serverChanged(newSelectedServer){
       selectFirstChannel();
     }
   }
+
+  getMyCurrentRole();
 }
 
 // Selektiert den ersten Channel des Servers, aufgerufen beim start und wenn 

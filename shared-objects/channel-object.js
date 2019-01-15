@@ -25,5 +25,5 @@ module.exports = {
     RoleAbility : RoleAbility,
 
     // Lege alle möglichen Typen von Channels fest
-    type : Object.freeze({"chat":1, "news":2, "doc":3, "anon-chat":4})
+    type : Object.freeze({"category":0 ,"chat":1, "news":2, "doc":3, "anonchat":4, "files":5})
 }
