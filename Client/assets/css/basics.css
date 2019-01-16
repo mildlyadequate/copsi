@@ -211,10 +211,25 @@ xxx {
     background:#ccc;
 }
 
+.fixed_header tbody{
+    display:block;
+    overflow:auto;
+    height:200px;
+    width:100%;
+}
 
+.fixed_header th{
+    width:20%;
+}
 
+.fixed_header td{
+    width:20%;
+}
 
-
-
-
-
+.fixed_header tr{
+    width:100%;
+}
+  
+.fixed_header thead tr{
+    display:block;
+}

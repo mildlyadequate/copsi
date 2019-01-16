@@ -23,6 +23,9 @@ const divContentFiles = document.getElementById('sm-content-files');
 const divMessageContainer = document.getElementById('divMessageContainer');
 const fileContainer = document.getElementById('fileContainer');
 
+// Button
+const btnFileUpload = document.getElementById('sm-file-upload');
+
 // Textfeld
 const txaMessage = document.getElementById('txaMessage');
 
@@ -520,15 +523,14 @@ function channelChanged(arg){
       divContentChat.classList.add('hide');
       // Elemente ausblenden
       divContentFiles.classList.remove('hide');
+      fileContainer.appendChild(getFileElement('placeholder'));
 
       // Check welche Rechte dieser User hat
       if(arg.roleAbility.fileupload.includes(roleMe)){
         //TODO upload button einfügen
-
-
-
-
-
+        btnFileUpload.classList.remove('hide');
+      }else{
+        btnFileUpload.classList.add('hide');
       }
 
   // Channel Typ NEWS

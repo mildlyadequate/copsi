@@ -7,7 +7,6 @@
   <title>Studienprojekt</title>
   <link rel="stylesheet" href="assets/css/bulma.css">
   <link rel="stylesheet" href="assets/css/basics.css">
-  <link rel="stylesheet" type="text/css" href="assets/css/start-overview.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="assets/fonts/fontawesome/css/all.css">
   <link rel="stylesheet" href="assets/fonts/typekit-fonts/montserrat/otf/Montserrat.css">
@@ -100,7 +99,8 @@
 
         </div>
 
-        <div class="columns is-multiline">
+        <!-- Erinnerung: Gepinnte Daten von zB Klausuren-->
+        <div id="sm-content-datepin" class="columns is-multiline">
           <div class="column">
             <div class="box notification is-primary">
               <div class="heading">Klausur</div>
@@ -125,8 +125,8 @@
           <div class="column">
 
             <!-- table -->
-            <table class="table is-fullwidth is-hoverable">
-              <thead>
+            <table class="table is-fullwidth is-hoverable fixed_header">
+              <thead class="table is-fullwidth">
                 <tr>
                   <th></th>
                   <th>Name</th>
@@ -135,11 +135,20 @@
                   <th></th>
                 </tr>
               </thead>
-              <tbody id="fileContainer">
+              <tbody class="table is-fullwidth" id="fileContainer">
                 <!-- Dateien werden hier eingefügt -->
               </tbody>
             </table>
           </div>
+        </div>
+
+        <div id="sm-file-upload" class="buttons is-right hide">
+          <a class="button sm-activated sm-btn is-rounded">
+            <span class="icon is-small">
+              <i class="fas fa-plus"></i>
+            </span>
+            <span>Hochladen</span>
+          </a>
         </div>
 
         <!-- Main Content: Chat -->
