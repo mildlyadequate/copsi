@@ -451,7 +451,7 @@ function getFileElement(fileMetainfo){
 function resizeContainers(height){
   divContentChat.style.height = (height - 380)+'px';
   navServerChannelList.style.height = (height - 140)+'px';
-
+//  divContentFiles.style.height = (height - 140)+'px';
 }
 
 // Aufgerufen durch Button oben links

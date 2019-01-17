@@ -114,7 +114,6 @@ TODO: tranisitions --------------------------------- */
 /* - Channels - */
 .sm-channels-header {
     height:  48px;
-    border-bottom:  1px solid #a0a0a0;
     margin-bottom: 16px;
     /*margin-right: -12px;
     padding-right: 12px; */
@@ -150,7 +149,6 @@ TODO: sm-content sollte keine id sein, man kann es in jedem "content" verwenden 
 .sm-content {
     overflow-y: auto;
 }
-
 
 /*
 empty content img: */
@@ -211,6 +209,7 @@ xxx {
     background:#ccc;
 }
 
+
 .fixed_header table{
     display:block;
 }
@@ -238,3 +237,8 @@ xxx {
 .fixed_header thead tr{
     display:block;
 }
+
+
+
+
+
