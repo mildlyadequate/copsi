@@ -171,18 +171,21 @@ function initServerFunction(copsiDB){
             // Zum hochladen von Dateien benutzt
             socket.on('channel:files:uploaded', (tmpInfo) => {
 
-                var options = {
-                    filename: 'filename.pdf',
-                    metadata: {
-                        serverId: tmpInfo[0],
-                        channelId: tmpInfo[1],
-                        userId: tmpInfo[2]
+                console.log(tmpInfo.files);
+
+                for(var i=0;i<tmpInfo.files.length;i++){
+
+                    var options = {
+                        filename: tmpInfo.files.path,
+                        metadata: {
+                            serverId: tmpInfo.serverId,
+                            channelId: tmpInfo.channelId,
+                            userId: tmpInfo.userId
+                        }
                     }
-                }
-                var writestream = gfs.createWriteStream([options]);
-                for(var i=0;i<tmpInfo[3].length;i++){
-                    //fs.createReadStream(tmpInfo[3][i]).pipe(writestream);
-                    streamifier.createReadStream(tmpInfo[3][i]).pipe(writestream);
+                    var writestream = gfs.createWriteStream([options]);
+
+                    streamifier.createReadStream(tmpInfo.files[i].content).pipe(writestream);
                 }
 
                 

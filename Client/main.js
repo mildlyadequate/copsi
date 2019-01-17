@@ -125,15 +125,16 @@ ipcMain.on('client:upload-btn:pressed',function(e,tmpInfo){
         var files = [];
         readMultipleFiles(filenames).subscribe({
             next(result) {
-                files.push(result.contents);
+                result.path = result.path.replace(/^.*[\\\/]/, '')
+                files.push(result);
             },
             error(err) {
               err.code;
             },
             complete() {
                 // Zu Objekt hinzufügen und an Server senden
-                tmpInfo.push(files);
-                serverList.get(tmpInfo[0])[0].emit('channel:files:uploaded',tmpInfo);
+                tmpInfo.files = files;
+                serverList.get(tmpInfo.serverId)[0].emit('channel:files:uploaded',tmpInfo);
             }
           });
     }
