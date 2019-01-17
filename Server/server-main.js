@@ -5,8 +5,13 @@ const usrModule = require('../shared-objects/user-object.js');
 const User = usrModule.User;
 
 // Server
+var fs = require('fs');
+var privateKey = fs.readFileSync('../server.key');
+var certificate = fs.readFileSync('../server.crt');
+var credentials = {key: privateKey, cert: certificate};
 const app = require('express')();
-const server = require('http').Server(app);
+const httpServer = require('http').Server(app);
+const server = require('https').Server(credentials, app);
 const io = require('socket.io')(server);
 // Datenbank
 const mongo = require('mongodb');
@@ -16,7 +21,8 @@ let gfs;
 const bcrypt = require('bcryptjs');
 
 // Listen auf Port
-server.listen(8000);
+httpServer.listen(8000);
+server.listen(2048);
 console.log('Server running.');
 
 // Datenbank Daten Maps

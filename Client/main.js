@@ -6,9 +6,9 @@ const{app,BrowserWindow,Menu, ipcMain, dialog} = electron;
 const fs = require('fs');
 
 // SocketIO
-const ioUrl = "http://localhost:8000";
+const ioUrl = "https://localhost:2048";
 const io = require("socket.io-client");
-const ioClient = io.connect(ioUrl);
+const ioClient = io(ioUrl, {secure: true, reconnect: true, rejectUnauthorized: false});
 
 // Files
 const readMultipleFiles = require('read-multiple-files');
