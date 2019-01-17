@@ -13,6 +13,7 @@
     "electron": "^3.1.1",
     "jquery": "^3.3.1",
     "moment": "^2.23.0",
+    "read-multiple-files": "^3.0.0",
     "shortid": "^2.2.14",
     "socket.io": "^2.2.0"
   },

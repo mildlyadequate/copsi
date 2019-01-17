@@ -20,21 +20,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Studienprojekt</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
-  <link rel="stylesheet" type="text/css" href="assets/css/basics.css">
   <link rel="stylesheet" type="text/css" href="02-start-overview.css">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
-    crossorigin="anonymous">
-  <link rel="stylesheet" href="assets/fonts/typekit-fonts/rubik/otf/rubik.css">
-  <link rel="stylesheet" href="assets/fonts/typekit-fonts/karla/otf/Karla.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 </head>
 
 <body>
-
+  
   <section class="sm-r">
-
+    
     <div class="columns">
-
+      
       <!-- left team column-->
       <aside class="column is-1 aside sm-teams sm-t sm-l sm-b" style="text-align: center;">
         <ul>
@@ -69,7 +66,7 @@
           <div class="sm-team-icons">
             <li>
               <span class="icon is-medium">
-                <i class="fas fa-2x fa-plus-square"></i>
+                  <i class="fas fa-2x fa-plus-square"></i>
               </span>
             </li>
           </div>
@@ -78,7 +75,7 @@
 
       <!-- side menu -->
       <aside class="column is-2 aside sm-t sm-b">
-        <div class="sm-content-header">
+        <div class="sm-teams-header">
           <h1 class="title">HCI</h1>
         </div>
 
@@ -98,10 +95,10 @@
           </p>
           <ul class="menu-list">
             <li>
-              <a class="is-active is-rounded" href="#">
+              <a class="is-active" href="#">
                 <span class="icon is-small">
                   <i class="fas fa-book"></i>
-                </span>
+              </span>
                 Skripte
               </a>
             </li>
@@ -114,25 +111,25 @@
                 Beispiele
               </a>
             </li>
-
+            
             <p class="menu-label">
               Fragen & Antworten
             </p>
             <ul class="menu-list">
               <li>
-                <a><span class="icon is-small"><i class="fas fa-ghost"></i></span>
-                  Anonym
+                <a><span class="icon is-small"><i class="fas fa-ghost"></i></span> 
+                   Anonym
                 </a>
               </li>
               <li>
                 <a><span class="icon is-small"><i class="fas fa-question-circle"></i></span>
-                  Diskussion
+                   Diskussion
                 </a>
               </li>
             </ul>
-        </nav>
+          </nav>
       </aside>
-
+      
       <!-- main content -->
       <main id="sm-news" class="column main sm-t sm-b">
         <!--nav class="breadcrumb is-small" aria-label="breadcrumbs">
@@ -147,22 +144,21 @@
             <div class="level-left">
               <div class="level-item">
                 <div class="title">
-                  <i class="fas fa-book"></i>
-                  Skripte
+                  <i class="fas fa-book"></i> 
+                    Skripte
                 </div>
               </div>
             </div>
             <div class="level-right">
               <div class="level-item">
-                <!-- TODO: erkennbar machen, dass man calendar anklicken kann für semestertermine-->
-                <div class="title">
-                  <i class="fas fa-calendar-alt"></i>
-                </div>
+                <button type="button" class="button is-small">
+                  September 01, 2018 - Februar 28, 2019
+                </button>
               </div>
             </div>
           </div>
         </div>
-
+        
         <!--div class="columns is-multiline">
           <div class="column">
             <div class="box notification is-primary">
@@ -191,7 +187,7 @@
         ------------alles ab dem folgenden div .columns ----------------------------->
 
         <!-- news: cards -->
-        <div class="columns sm-content">
+        <div class="columns">
           <div class="column">
 
             <!-- table -->
@@ -247,18 +243,9 @@
                   <td>2.7 MB</td>
                   <td>03.11.2018 07:03</td>
                   <td><i class="fas fa-download"></i></td>
-                </tr>
+                 </tr>
               </tbody>
             </table>
-
-            <div class="buttons is-right">
-              <a class="button sm-activated sm-btn is-rounded">
-                <span class="icon is-small">
-                  <i class="fas fa-plus"></i>
-                </span>
-                <span>Hochladen</span>
-              </a>
-            </div>
 
           </div>
         </div>
@@ -273,55 +260,54 @@
 
 
 
+      
 
 
 
 
 
 
-
-
+    
 
       <!-- Mitglieder / Teilnehmer im Kurs -->
       <div class="column is-2 aside sm-t">
 
-        <nav class="menu">
+      <nav class="menu">
+        <p class="menu-label">
+          Professor
+        </p>
+        <ul class="menu-list">
+          <li><a href="#"><span class="icon is-small"><i class="fas fa-kiwi-bird"></i></span>
+              Lorem Ipsum</a></li>
+        </ul>
+        <p class="menu-label">
+          Assistenten
+        </p>
+        <ul class="menu-list">
+          <li><a href="/bulma-admin-dashboard-template/forms.html">
+            <span class="icon is-small">
+              <i class="fas fa-kiwi-bird"></i>
+            </span>
+              Dolor Sit</a></li>
+          <li><a href="/bulma-admin-dashboard-template/ui-elements.html"><span class="icon is-small"><i class="fas fa-kiwi-bird"></i></span>
+              Amet Consetetur</a></li>
+          <li><a href="/bulma-admin-dashboard-template/tables.html"><span class="icon is-small"><i class="fas fa-kiwi-bird"></i></span>
+              Sadisciping elitr</a></li>
+          
           <p class="menu-label">
-            Professor
+            Studierende
           </p>
           <ul class="menu-list">
-            <li><a href="#"><span class="icon is-small"><i class="fas fa-kiwi-bird"></i></span>
-                Lorem Ipsum</a></li>
+            <li><a><span class="icon is-small"><i class="fas fa-kiwi-bird"></i></span> Lorem Ipsum</a></li>
+            <li><a><span class="icon is-small"><i class="fas fa-kiwi-bird"></i></span> Dolor Sit</a></li>
           </ul>
-          <p class="menu-label">
-            Assistenten
-          </p>
-          <ul class="menu-list">
-            <li><a href="/bulma-admin-dashboard-template/forms.html">
-                <span class="icon is-small">
-                  <i class="fas fa-kiwi-bird"></i>
-                </span>
-                Dolor Sit</a></li>
-            <li><a href="/bulma-admin-dashboard-template/ui-elements.html"><span class="icon is-small"><i class="fas fa-kiwi-bird"></i></span>
-                Amet Consetetur</a></li>
-            <li><a href="/bulma-admin-dashboard-template/tables.html"><span class="icon is-small"><i class="fas fa-kiwi-bird"></i></span>
-                Sadisciping elitr</a></li>
-
-            <p class="menu-label">
-              Studierende
-            </p>
-            <ul class="menu-list">
-              <li><a><span class="icon is-small"><i class="fas fa-kiwi-bird"></i></span> Lorem Ipsum</a></li>
-              <li><a><span class="icon is-small"><i class="fas fa-kiwi-bird"></i></span> Dolor Sit</a></li>
-            </ul>
-        </nav>
-      </div>
+      </nav>
+    </div>
 
 
     </div>
-
+  
   </section>
-
+  
 </body>
-
 </html>

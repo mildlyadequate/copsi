@@ -232,6 +232,7 @@ xxx {
 
 .fixed_header tr{
     width:100%;
+    display:block;
 }
   
 .fixed_header thead tr{
