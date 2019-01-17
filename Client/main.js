@@ -110,6 +110,20 @@ ipcMain.on('channel:get:old-messages',function(e,tmpInfo){
 
 });
 
+// Aufgerufen durch klicken des Upload buttons in Files Channels
+ipcMain.on('client:upload-btn:pressed',function(e,tmpInfo){
+    
+    var files = dialog.showOpenDialog({ properties: ['openFile', 'multiSelections'] });
+    if(files!=undefined && files != null){
+        
+        tmpInfo.push(files);
+        serverList.get(tmpInfo[0])[0].emit('channel:files:uploaded',tmpInfo);
+
+    }
+
+});
+
+
 /*
 //////////////////////////// SOCKET.IO EVENTS ////////////////////////////////////////
 */

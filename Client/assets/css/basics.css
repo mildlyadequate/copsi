@@ -211,6 +211,10 @@ xxx {
     background:#ccc;
 }
 
+.fixed_header table{
+    display:block;
+}
+
 .fixed_header tbody{
     display:block;
     overflow:auto;

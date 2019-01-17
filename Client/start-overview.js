@@ -2,7 +2,7 @@
 const electron = require('electron');
 const shortid = require('shortid');
 const moment = require('moment');
-const {ipcRenderer,shell,Menu} = electron;
+const {ipcRenderer,shell,Menu,dialog} = electron;
 const initialWindowHeight = 630;
 
 // Custom Modules
@@ -508,6 +508,7 @@ function channelChanged(arg){
     txaMessage.classList.remove('hide');
     // Elemente ausblenden
     divContentFiles.classList.add('hide');
+    btnFileUpload.classList.add('hide');
 
     // Platzhalter im Textfeld ändern
     txaMessage.placeholder = 'Nachricht an @'+arg.name;
@@ -541,6 +542,7 @@ function channelChanged(arg){
     divContentChat.classList.remove('hide');
     // Elemente ausblenden
     divContentFiles.classList.add('hide');
+    btnFileUpload.classList.add('hide');
 
   // Channel Typ ANONCHAT
   }else if(arg.type==chnModule.type.anonchat){
@@ -550,6 +552,7 @@ function channelChanged(arg){
     txaMessage.classList.remove('hide');
     // Elemente ausblenden
     divContentFiles.classList.add('hide');
+    btnFileUpload.classList.add('hide');
 
     // Platzhalter im Textfeld ändern
     txaMessage.placeholder = 'Nachricht an @'+arg.name;
@@ -607,4 +610,8 @@ function serverChanged(newSelectedServer){
 function selectFirstChannel(){
   selectedChannelId = serverDataObject[0].channels[0].childChannels[0];
   channelChanged(selectedChannelId);
+}
+
+function handleUploadBtn(){
+  ipcRenderer.send('client:upload-btn:pressed',[selectedServerId,selectedChannelId,userMe.id]);
 }
