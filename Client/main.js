@@ -122,19 +122,17 @@ ipcMain.on('client:upload-btn:pressed',function(e,tmpInfo){
     // Wenn User eine oder mehrere Dateien ausgewählt hat und nicht abbrechen gedrückt hat
     if(filenames!=undefined && filenames != null){
 
-        var files = [];
+        tmpInfo.files = [];
         readMultipleFiles(filenames).subscribe({
             next(result) {
-                result.path = result.path.replace(/^.*[\\\/]/, '')
-                files.push(result);
+                var file = {name: result.path.replace(/^.*[\\\/]/, ''), file: result.contents};
+                tmpInfo.files.push(file);
             },
             error(err) {
               err.code;
             },
             complete() {
                 // Zu Objekt hinzufügen und an Server senden
-                tmpInfo.files = files;
-                console.log(tmpInfo);
                 serverList.get(tmpInfo.serverId)[0].emit('channel:files:uploaded',tmpInfo);
             }
           });

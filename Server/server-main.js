@@ -11,6 +11,7 @@ const io = require('socket.io')(server);
 // Datenbank
 const mongo = require('mongodb');
 var Grid = require('gridfs-stream');
+let bucket;
 let gfs;
 // Daten verschlüsselung
 const bcrypt = require('bcryptjs');
@@ -40,6 +41,7 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
     
     // Lade Copsi DB
     const copsiDB = db.db("copsi");
+    bucket = new mongo.GridFSBucket(copsiDB);
     gfs = Grid(copsiDB, mongo);
     console.log("DB connected");
 
@@ -171,25 +173,43 @@ function initServerFunction(copsiDB){
             // Zum hochladen von Dateien benutzt
             socket.on('channel:files:uploaded', (tmpInfo) => {
 
-                console.log(tmpInfo.files[0].length);
-
                 for(var i=0;i<tmpInfo.files.length;i++){
-
                     var options = {
-                        filename: tmpInfo.files.path,
                         metadata: {
+                            filename: tmpInfo.files[i].name,
                             serverId: tmpInfo.serverId,
                             channelId: tmpInfo.channelId,
                             userId: tmpInfo.userId
                         }
                     }
-                    var writestream = gfs.createWriteStream([options]);
 
-                    streamifier.createReadStream(tmpInfo.files[i].content).pipe(writestream);
+                    // TODO die objekt id dieses elements zu channel hinzufügen vll
+
+                    streamifier.createReadStream(tmpInfo.files[i].file).
+                    pipe(bucket.openUploadStream(tmpInfo.files[i].name,options)).
+                    on('error', function(error) {
+                      assert.ifError(error);
+                    }).
+                    on('finish', function(result) {
+
+                        var gg = bucket.find( { _id: result._id } );
+                        console.log(gg);
+
+                        // 
+                        copsiDB.collection("channel-messages").updateOne(
+                            {"channelId" : tmpInfo.channelId, "serverId" : tmpInfo.serverId},
+                            { "$push": { messages:result._id}},
+                            function(err, res) {
+                                if (err) throw err;
+                            }
+                        );
+
+                      console.log('done!');
+                    });
+
+                   // var writestream = gfs.createWriteStream(options);
+                    //streamifier.createReadStream(tmpInfo.files[i].file).pipe(writestream);
                 }
-
-                
-
             });
 
             console.log('Client '+socket.id+' connected to '+srv.shortName);
