@@ -171,7 +171,7 @@ function initServerFunction(copsiDB){
             // Zum hochladen von Dateien benutzt
             socket.on('channel:files:uploaded', (tmpInfo) => {
 
-                console.log(tmpInfo.files);
+                console.log(tmpInfo.files[0].length);
 
                 for(var i=0;i<tmpInfo.files.length;i++){
 

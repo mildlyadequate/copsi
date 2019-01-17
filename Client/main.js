@@ -134,6 +134,7 @@ ipcMain.on('client:upload-btn:pressed',function(e,tmpInfo){
             complete() {
                 // Zu Objekt hinzufügen und an Server senden
                 tmpInfo.files = files;
+                console.log(tmpInfo);
                 serverList.get(tmpInfo.serverId)[0].emit('channel:files:uploaded',tmpInfo);
             }
           });
