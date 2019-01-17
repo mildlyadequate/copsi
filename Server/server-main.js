@@ -14,6 +14,8 @@ var Grid = require('gridfs-stream');
 let gfs;
 // Daten verschlüsselung
 const bcrypt = require('bcryptjs');
+// Daten
+var streamifier = require('streamifier');
 
 // Listen auf Port
 server.listen(8000);
@@ -169,7 +171,20 @@ function initServerFunction(copsiDB){
             // Zum hochladen von Dateien benutzt
             socket.on('channel:files:uploaded', (tmpInfo) => {
 
-                console.log(tmpInfo);
+                var options = {
+                    filename: 'filename.pdf',
+                    metadata: {
+                        serverId: tmpInfo[0],
+                        channelId: tmpInfo[1],
+                        userId: tmpInfo[2]
+                    }
+                }
+                var writestream = gfs.createWriteStream([options]);
+                for(var i=0;i<tmpInfo[3].length;i++){
+                    //fs.createReadStream(tmpInfo[3][i]).pipe(writestream);
+                    streamifier.createReadStream(tmpInfo[3][i]).pipe(writestream);
+                }
+
                 
 
             });

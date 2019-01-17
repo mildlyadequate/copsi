@@ -613,5 +613,5 @@ function selectFirstChannel(){
 }
 
 function handleUploadBtn(){
-  ipcRenderer.send('client:upload-btn:pressed',[selectedServerId,selectedChannelId,userMe.id]);
+  ipcRenderer.send('client:upload-btn:pressed',{serverId: selectedServerId,channelId: selectedChannelId, userId: userMe.id});
 }
