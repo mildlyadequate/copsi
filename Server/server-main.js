@@ -10,6 +10,8 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 // Datenbank
 const mongo = require('mongodb');
+var Grid = require('gridfs-stream');
+let gfs;
 // Daten verschlüsselung
 const bcrypt = require('bcryptjs');
 
@@ -36,6 +38,7 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
     
     // Lade Copsi DB
     const copsiDB = db.db("copsi");
+    gfs = Grid(copsiDB, mongo);
     console.log("DB connected");
 
     // Lade alle Daten (Methoden rufen sich gegenseitig auf um Reihenfolge zu garantieren)
@@ -160,6 +163,14 @@ function initServerFunction(copsiDB){
                     serverList.get(tmpInfo[0])[1].to(tmpInfo[0]+tmpInfo[1]).emit('channel:receive:old-messages',result[0].messages);
 
                 });
+
+            });
+
+            // Zum hochladen von Dateien benutzt
+            socket.on('channel:files:uploaded', (tmpInfo) => {
+
+                console.log(tmpInfo);
+                
 
             });
 

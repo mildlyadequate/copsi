@@ -3,11 +3,15 @@ const electron = require('electron');
 const url = require('url');
 const path = require('path');
 const{app,BrowserWindow,Menu, ipcMain, dialog} = electron;
+const fs = require('fs');
 
 // SocketIO
 const ioUrl = "http://localhost:8000";
 const io = require("socket.io-client");
 const ioClient = io.connect(ioUrl);
+
+// Files
+const readMultipleFiles = require('read-multiple-files');
 
 // Variables
 let serverList = new Map();
@@ -110,6 +114,33 @@ ipcMain.on('channel:get:old-messages',function(e,tmpInfo){
 
 });
 
+// Aufgerufen durch klicken des Upload buttons in Files Channels
+ipcMain.on('client:upload-btn:pressed',function(e,tmpInfo){
+    
+    var filenames = dialog.showOpenDialog({ properties: ['openFile', 'multiSelections'] });
+
+    // Wenn User eine oder mehrere Dateien ausgewählt hat und nicht abbrechen gedrückt hat
+    if(filenames!=undefined && filenames != null){
+
+        var files = [];
+        readMultipleFiles(filenames).subscribe({
+            next(result) {
+                files.push(result.contents);
+            },
+            error(err) {
+              err.code;
+            },
+            complete() {
+                // Zu Objekt hinzufügen und an Server senden
+                tmpInfo.push(files);
+                serverList.get(tmpInfo[0])[0].emit('channel:files:uploaded',tmpInfo);
+            }
+          });
+    }
+
+});
+
+
 /*
 //////////////////////////// SOCKET.IO EVENTS ////////////////////////////////////////
 */
@@ -196,3 +227,9 @@ function switchScreen(screenHtml) {
         slashes: true
     }));
 }
+
+/*
+//////////////////////////// FS FUNCTIONS ////////////////////////////////////////
+*/
+
+

@@ -211,6 +211,10 @@ xxx {
     background:#ccc;
 }
 
+.fixed_header table{
+    display:block;
+}
+
 .fixed_header tbody{
     display:block;
     overflow:auto;
@@ -228,6 +232,7 @@ xxx {
 
 .fixed_header tr{
     width:100%;
+    display:block;
 }
   
 .fixed_header thead tr{

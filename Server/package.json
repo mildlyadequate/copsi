@@ -6,7 +6,8 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "express": "^4.16.4",
-    "mongodb": "^3.1.10",
+    "gridfs-stream": "^1.1.1",
+    "mongodb": "^3.2.0",
     "shortid": "^2.2.14",
     "socket.io": "^2.2.0"
   },
