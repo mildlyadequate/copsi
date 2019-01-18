@@ -192,8 +192,21 @@ function initServerFunction(copsiDB){
                     }).
                     on('finish', function(result) {
 
-                        var gg = bucket.find( { _id: result._id } );
-                        console.log(gg);
+                        /*copsiDB.collection("fs.files").find( { _id: result._id } ).sort( { uploadDate: 1 }).toArray(function(err, res) {
+
+        
+                        });*/
+
+                        console.log(result);
+
+                        bucket.openDownloadStreamByName(result.filename).
+                        on('error', function(error) {
+                            assert.ifError(error);
+                        }).
+                        on('end', function() {
+                            console.log('done!');
+                        });
+
 
                         // 
                         copsiDB.collection("channel-messages").updateOne(
