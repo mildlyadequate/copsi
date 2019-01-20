@@ -114,6 +114,14 @@ ipcMain.on('channel:get:old-messages',function(e,tmpInfo){
 
 });
 
+// Wenn ein Channel geladen werden soll fordert dieses Event den Server auf
+ipcMain.on('channel:files:get:metadata',function(e,tmpInfo){
+    
+    // tmpInfo = [serverId,channelId]
+    serverList.get(tmpInfo[0])[0].emit('channel:files:get:metadata',tmpInfo);
+
+});
+
 // Aufgerufen durch klicken des Upload buttons in Files Channels
 ipcMain.on('client:upload-btn:pressed',function(e,tmpInfo){
     
@@ -168,26 +176,19 @@ ioClient.on("user:logged-in:personal-info", function(userData){
         // Verbinde mit jedem Sub-Server aus der Liste und speichere in map
         var tmpServer = io.connect(ioUrl+'/'+serverData[i].id);
 
-        /*
-        for(var x=0;x<serverData[i].channels.length;x++){
-            for(var y=0;y<serverData[i].channels[x].childChannels.length;y++){
-                tmpServer.join(serverData[i].channels[x].childChannels[y].id, () => {
-                    //let rooms = Object.keys(socket.rooms);
-                    console.log("HAHA XD"); // [ <socket.id>, 'room 237' ]
-                    //io.to('room 237').emit('a new user has joined the room'); // broadcast to everyone in the room
-                });
-            }
-        }*/
-
         // Wenn eine Nachricht auf diesem Server empfangen wird
         tmpServer.on('server:message', (msg) => {
-            // Sende via ipc
             mainWindow.webContents.send('server:message',msg);
         });
 
         // Bekomme alte Nachrichten des aktuell selektierten Channels
         tmpServer.on('channel:receive:old-messages', (messages) => {
             mainWindow.webContents.send('channel:receive:old-messages',messages);
+        });
+
+        // Bekomme metadata der Dateien eines Channels
+        tmpServer.on('channel:files:set:metadata', (package) => {
+            mainWindow.webContents.send('channel:files:set:metadata',package);
         });
 
         // Zur Server Map hinzufügen

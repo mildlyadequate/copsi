@@ -18,3 +18,19 @@ farben für vorlesungs icons selbst anpassen können (mit standardfarben am anfang
 farben für teilnehmerliste (jeden teilnehmer farbig je nach rolle: bsp. prof rot, student blau etc)
 
 klausur / kalenderdaten standardmäßig anzeigen aber mit klick permanent verstecken können bis vom user wieder aufgeklappt wird
+
+-------------------------------------------------------------------
+
+dunkles design nicht benutzen / aber angenehmer fürs auge
+
+farben
+
+volle kursnamen
+
+hilfe / tutorial
+
+upload button außerhalb
+
+kalenderdaten nur in neuigkeits channel
+
+anonym: von channel sperren

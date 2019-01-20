@@ -10,6 +10,7 @@ const msgModule = require('../shared-objects/message-object.js');
 const Message = msgModule.Message;
 const chnModule = require('../shared-objects/channel-object.js');  
 const Channel = chnModule.Message;
+const utils = require('../shared-objects/utils.js');  
 
 // Server Display Elemente
 const divServerUserList = document.getElementById('divServerUserList');
@@ -96,6 +97,8 @@ ipcRenderer.on('server:message',function(e,msg){
 // Empfange alte Nachrichten nachdem der Channel geändert wurde
 ipcRenderer.on('channel:receive:old-messages',function(e,messages){
 
+  //TODO Check ob immernoch der gleiche channel ausgewählt ist
+
   //TODO nur die letzten 50 Nachrichten laden (am besten schon im server)
   divMessageContainer.innerHTML = '';
 
@@ -116,6 +119,16 @@ ipcRenderer.on('channel:receive:old-messages',function(e,messages){
   divContentChat.scrollTop = divContentChat.scrollHeight;
 });
 
+// Empfange alte Nachrichten nachdem der Channel geändert wurde
+ipcRenderer.on('channel:files:set:metadata',function(e,package){
+  //TODO Check ob immernoch der gleiche channel ausgewählt ist
+
+  for(var i=0;i<package.metadata.length;i++){
+
+    fileContainer.appendChild(getFileElement(package.metadata[i]));
+
+  }
+});
 
 /*
 //////////////////////////// Interface Creation Functions ////////////////////////////////////////
@@ -418,10 +431,10 @@ function getFileElement(fileMetainfo){
   thFileIcon.appendChild(fileIcon);
 
   var tdName = document.createElement('td');
-  tdName.innerText = '00_Intro';
+  tdName.innerText = fileMetainfo.metadata.filename;
 
   var tdSize = document.createElement('td');
-  tdSize.innerText = '795.0 kB';
+  tdSize.innerText = utils.formatBytes(fileMetainfo.length,2);
 
   var tdTimestamp = document.createElement('td');
   tdTimestamp.innerText = '24.09.2018 11:17';
@@ -515,7 +528,7 @@ function channelChanged(arg){
     txaMessage.placeholder = 'Nachricht an @'+arg.name;
 
     // Event senden um alte Nachrichten zu laden
-    ipcRenderer.send('channel:get:old-messages',[selectedServerId,arg.id]);
+    ipcRenderer.send('channel:get:old-messages',[selectedServerId,selectedChannelId]);
 
   // Channel Typ FILES
   }else if(arg.type==chnModule.type.files){
@@ -525,7 +538,6 @@ function channelChanged(arg){
       divContentChat.classList.add('hide');
       // Elemente ausblenden
       divContentFiles.classList.remove('hide');
-      fileContainer.appendChild(getFileElement('placeholder'));
 
       // Check welche Rechte dieser User hat
       if(arg.roleAbility.fileupload.includes(roleMe)){
@@ -534,6 +546,8 @@ function channelChanged(arg){
       }else{
         btnFileUpload.classList.add('hide');
       }
+
+      ipcRenderer.send('channel:files:get:metadata',[selectedServerId,selectedChannelId]);
 
   // Channel Typ NEWS
   }else if(arg.type==chnModule.type.news){

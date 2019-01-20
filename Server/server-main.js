@@ -4,6 +4,9 @@ const Message = msgModule.Message;
 const usrModule = require('../shared-objects/user-object.js');  
 const User = usrModule.User;
 
+// Other Modules
+const shortid = require('shortid');
+
 // Server
 const app = require('express')();
 const server = require('http').Server(app);
@@ -164,8 +167,19 @@ function initServerFunction(copsiDB){
                 let query = { channelId: tmpInfo[1], serverId: tmpInfo[0]};
                 copsiDB.collection("channel-messages").find(query).toArray(function(err, result) {
 
+                    //TODO IMPORTANT -> !!!!!!!!!!!!!!!!!!!! NUR AN DEN CLIENT SENDEN DER ANGEFRAGT HAT NICHT AN ALLE
                     serverList.get(tmpInfo[0])[1].to(tmpInfo[0]+tmpInfo[1]).emit('channel:receive:old-messages',result[0].messages);
 
+                });
+
+            });
+
+            // Aufgerufen wenn Dateien eines File Channels angezeigt werden sollen
+            socket.on('channel:files:get:metadata', (tmpInfo) => {
+
+                let query = { "serverId": tmpInfo.serverId, "channelId": tmpInfo.channelId};
+                copsiDB.collection("fs.files").find(query).toArray(function(err, result) {
+                    socket.emit('channel:files:set:metadata',{serverId: tmpInfo.serverId, channelId: tmpInfo.channelId, metadata: result});
                 });
 
             });
@@ -185,8 +199,10 @@ function initServerFunction(copsiDB){
 
                     // TODO die objekt id dieses elements zu channel hinzufügen vll
 
+                    var fileId = shortid.generate();
+
                     streamifier.createReadStream(tmpInfo.files[i].file).
-                    pipe(bucket.openUploadStream(tmpInfo.files[i].name,options)).
+                    pipe(bucket.openUploadStream(fileId,options)).
                     on('error', function(error) {
                       assert.ifError(error);
                     }).
@@ -199,14 +215,13 @@ function initServerFunction(copsiDB){
 
                         console.log(result);
 
-                        bucket.openDownloadStreamByName(result.filename).
+                        bucket.openDownloadStreamByName(fileId).
                         on('error', function(error) {
                             assert.ifError(error);
                         }).
                         on('end', function() {
                             console.log('done!');
                         });
-
 
                         // 
                         copsiDB.collection("channel-messages").updateOne(
