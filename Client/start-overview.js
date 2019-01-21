@@ -130,6 +130,14 @@ ipcRenderer.on('channel:files:set:metadata',function(e,package){
   }
 });
 
+// Empfange metadaten zur zuletzt hochgeladenen Datei
+ipcRenderer.on('channel:files:get:uploaded',function(e,package){
+  //TODO Check ob immernoch der gleiche channel ausgewählt ist
+
+  fileContainer.appendChild(getFileElement(package));
+
+});
+
 /*
 //////////////////////////// Interface Creation Functions ////////////////////////////////////////
 */
@@ -437,14 +445,24 @@ function getFileElement(fileMetainfo){
   tdSize.innerText = utils.formatBytes(fileMetainfo.length,2);
 
   var tdTimestamp = document.createElement('td');
-  tdTimestamp.innerText = '24.09.2018 11:17';
+  var dateTime = moment(fileMetainfo.uploadDate);
+  tdTimestamp.innerText = dateTime.format("DD.MM.YYYY HH:mm");
 
   var downloadIcon = document.createElement('i');
   downloadIcon.classList.add('fas');
   downloadIcon.classList.add('fa-download');
 
+  var link = document.createElement('a');
+  link.onclick = function(arg) {
+    return function() {
+      ipcRenderer.send('channel:file:download',{filename: arg, serverId: selectedServerId});
+      console.log("loooooool"+arg);
+    }
+  }(fileMetainfo.filename);
+  link.appendChild(downloadIcon);
+
   var thDownloadIcon = document.createElement('th');
-  thDownloadIcon.appendChild(downloadIcon);
+  thDownloadIcon.appendChild(link);
 
   var trContainer = document.createElement('tr');
   trContainer.appendChild(thFileIcon);
@@ -498,8 +516,9 @@ function channelChanged(arg){
   // Setze Channel Namen
   divchannelTitle.innerText = arg.name;
 
-  // Leere Message Container
+  // Leere Container
   divMessageContainer.innerHTML = '';
+  fileContainer.innerHTML = "";
 
   // Selektierten Channel ändern
   var oldSelected = document.getElementById('chnObj_'+selectedChannelId);
@@ -547,7 +566,7 @@ function channelChanged(arg){
         btnFileUpload.classList.add('hide');
       }
 
-      ipcRenderer.send('channel:files:get:metadata',[selectedServerId,selectedChannelId]);
+      ipcRenderer.send('channel:files:get:metadata',{serverId: selectedServerId, channelId: selectedChannelId});
 
   // Channel Typ NEWS
   }else if(arg.type==chnModule.type.news){
@@ -558,6 +577,15 @@ function channelChanged(arg){
     // Elemente ausblenden
     divContentFiles.classList.add('hide');
     btnFileUpload.classList.add('hide');
+
+    if(arg.roleAbility.write.includes(roleMe)){
+      txaMessage.classList.remove('hide');
+    }
+
+    if(arg.roleAbility.read.includes(roleMe)){
+      // Event senden um alte Nachrichten zu laden
+      ipcRenderer.send('channel:get:old-messages',[selectedServerId,selectedChannelId]);
+    }
 
   // Channel Typ ANONCHAT
   }else if(arg.type==chnModule.type.anonchat){
@@ -628,5 +656,5 @@ function selectFirstChannel(){
 }
 
 function handleUploadBtn(){
-  ipcRenderer.send('client:upload-btn:pressed',{serverId: selectedServerId,channelId: selectedChannelId, userId: userMe.id});
+  ipcRenderer.send('channel:files:upload',{serverId: selectedServerId,channelId: selectedChannelId, userId: userMe.id});
 }
