@@ -118,12 +118,12 @@ ipcMain.on('channel:get:old-messages',function(e,tmpInfo){
 ipcMain.on('channel:files:get:metadata',function(e,tmpInfo){
     
     // tmpInfo = [serverId,channelId]
-    serverList.get(tmpInfo[0])[0].emit('channel:files:get:metadata',tmpInfo);
+    serverList.get(tmpInfo.serverId)[0].emit('channel:files:get:metadata',tmpInfo);
 
 });
 
 // Aufgerufen durch klicken des Upload buttons in Files Channels
-ipcMain.on('client:upload-btn:pressed',function(e,tmpInfo){
+ipcMain.on('channel:files:upload',function(e,tmpInfo){
     
     var filenames = dialog.showOpenDialog({ properties: ['openFile', 'multiSelections'] });
 
@@ -137,17 +137,22 @@ ipcMain.on('client:upload-btn:pressed',function(e,tmpInfo){
                 tmpInfo.files.push(file);
             },
             error(err) {
-              err.code;
+              console.log(err);
             },
             complete() {
                 // Zu Objekt hinzufügen und an Server senden
-                serverList.get(tmpInfo.serverId)[0].emit('channel:files:uploaded',tmpInfo);
+                serverList.get(tmpInfo.serverId)[0].emit('channel:files:upload',tmpInfo);
             }
           });
     }
-
 });
 
+// Wenn ein Channel geladen werden soll fordert dieses Event den Server auf
+ipcMain.on('channel:file:download',function(e,tmpInfo){
+    
+    serverList.get(tmpInfo.serverId)[0].emit('channel:file:download',tmpInfo.filename);
+
+});
 
 /*
 //////////////////////////// SOCKET.IO EVENTS ////////////////////////////////////////
@@ -190,7 +195,12 @@ ioClient.on("user:logged-in:personal-info", function(userData){
         tmpServer.on('channel:files:set:metadata', (package) => {
             mainWindow.webContents.send('channel:files:set:metadata',package);
         });
-
+        
+        // Metadaten zur letzten hochgeladenen Datei
+        tmpServer.on('channel:files:get:uploaded', (fileMetadata) => {
+            mainWindow.webContents.send('channel:files:get:uploaded',fileMetadata);
+        });
+        
         // Zur Server Map hinzufügen
         serverList.set(serverData[i].id,[tmpServer,serverData[i]]);
     }

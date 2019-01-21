@@ -177,15 +177,32 @@ function initServerFunction(copsiDB){
             // Aufgerufen wenn Dateien eines File Channels angezeigt werden sollen
             socket.on('channel:files:get:metadata', (tmpInfo) => {
 
-                let query = { "serverId": tmpInfo.serverId, "channelId": tmpInfo.channelId};
+                let query = { "metadata.serverId": tmpInfo.serverId, "metadata.channelId": tmpInfo.channelId };
                 copsiDB.collection("fs.files").find(query).toArray(function(err, result) {
                     socket.emit('channel:files:set:metadata',{serverId: tmpInfo.serverId, channelId: tmpInfo.channelId, metadata: result});
                 });
 
             });
 
+            // Aufgerufen wenn Dateien eines File Channels angezeigt werden sollen
+            socket.on('channel:file:download', (filename) => {
+
+                /*var lol = bucket.openDownloadStreamByName(filename).
+                    on('error', function(error) {
+                        assert.ifError(error);
+                        console.log(error);
+                    }).
+                    on('finish', function(arg) {
+                        console.log('done!');
+                        console.log(arg);
+                });
+                console.log(lol);*/
+
+                
+            });
+
             // Zum hochladen von Dateien benutzt
-            socket.on('channel:files:uploaded', (tmpInfo) => {
+            socket.on('channel:files:upload', (tmpInfo) => {
 
                 for(var i=0;i<tmpInfo.files.length;i++){
                     var options = {
@@ -198,9 +215,7 @@ function initServerFunction(copsiDB){
                     }
 
                     // TODO die objekt id dieses elements zu channel hinzufügen vll
-
                     var fileId = shortid.generate();
-
                     streamifier.createReadStream(tmpInfo.files[i].file).
                     pipe(bucket.openUploadStream(fileId,options)).
                     on('error', function(error) {
@@ -208,31 +223,10 @@ function initServerFunction(copsiDB){
                     }).
                     on('finish', function(result) {
 
-                        /*copsiDB.collection("fs.files").find( { _id: result._id } ).sort( { uploadDate: 1 }).toArray(function(err, res) {
+                        serverList.get(tmpInfo.serverId)[1].to(tmpInfo.serverId+tmpInfo.channelId).emit('channel:files:get:uploaded',result);
 
-        
-                        });*/
 
-                        console.log(result);
-
-                        bucket.openDownloadStreamByName(fileId).
-                        on('error', function(error) {
-                            assert.ifError(error);
-                        }).
-                        on('end', function() {
-                            console.log('done!');
-                        });
-
-                        // 
-                        copsiDB.collection("channel-messages").updateOne(
-                            {"channelId" : tmpInfo.channelId, "serverId" : tmpInfo.serverId},
-                            { "$push": { messages:result._id}},
-                            function(err, res) {
-                                if (err) throw err;
-                            }
-                        );
-
-                      console.log('done!');
+                        console.log('done!');
                     });
 
                    // var writestream = gfs.createWriteStream(options);
