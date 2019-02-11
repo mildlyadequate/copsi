@@ -27,7 +27,6 @@ body, html {
     height: 100%;
     /* height should be 100vh
     section and columns height should be 100vh too */
-    font-family: Karla !important;
 }
 
 .title {
@@ -84,6 +83,7 @@ TODO: tranisitions --------------------------------- */
     background: #0ABBEF !important;
     color: white !important;
     /* shadow */
+    border-radius: 290486px !important;
 }
 
 /* - Trenner zwischen Home Button und Server Buttons - */
@@ -170,8 +170,7 @@ xxx {
 /* Button */
 /*TODO: HOVER!! */
 .sm-btn {
-    font-weight: 500;
-    letter-spacing: .1em;
+    letter-spacing: .07em;
     text-transform: uppercase;
     box-shadow: 0 2px 3px rgba(10,10,10,.1), 0 0 0 1px rgba(10,10,10,.1);
     border: 0px !important;
@@ -239,6 +238,16 @@ xxx {
 }
 
 
+/* --------- Icon Fix ----------*/
+
+.icon {
+    margin-right: 8px;
+}
 
 
+
+/* --------- Button Fix -------------- */
+.menu-list a {
+    border-radius: 290486px;
+}
 
