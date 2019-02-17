@@ -15,7 +15,7 @@
 }
 
 /* Klasse wird benutzt um Elemente zu verstecken */
-.hide{
+.hide {
     display: none !important;
 }
 
@@ -25,8 +25,7 @@
 body, html {
     overflow: hidden;
     height: 100%;
-    /* height should be 100vh
-    section and columns height should be 100vh too */
+    font-family: Rubik !important;
 }
 
 .title {
@@ -134,14 +133,6 @@ TODO: tranisitions --------------------------------- */
     height:  48px;
     margin-bottom: 16px;
 }
-
-/*
-    Hochschul Farben Logo:
-    #69B22F grün
-    #006C55 dunkelgrün
-    #237D87 teal
-    #0CB0D7 blau
-*/
 
 /* start overview: news scroll
 important: team, channels and members also need their own height!  
