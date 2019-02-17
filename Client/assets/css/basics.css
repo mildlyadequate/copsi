@@ -242,3 +242,7 @@ xxx {
     border-radius: 290486px;
 }
 
+
+.box:last-child {
+    margin-bottom: 24px;
+}

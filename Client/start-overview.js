@@ -532,7 +532,7 @@ function getFileElement(fileMetainfo){
 
 // Aufgerufen jedesmal wenn sich die Größe des Fensters ändert, einmal beim Start 
 function resizeContainers(height){
-  divContentChat.style.height = (height - 380)+'px';
+  divContentChat.style.height = (height - 410)+'px';
   navServerChannelList.style.height = (height - 140)+'px';
 //  divContentFiles.style.height = (height - 140)+'px';
 }
