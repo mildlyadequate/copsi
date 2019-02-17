@@ -10,7 +10,6 @@ var colours = require('./shared-objects/colours.json');
 
 // Other Modules
 const shortid = require('shortid');
-const colcon = require('color-convert');
 
 // Server
 const app = require('express')();
