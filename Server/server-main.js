@@ -1,12 +1,12 @@
 // Custom Modules
-const msgModule = require('../shared-objects/message-object.js');  
+const msgModule = require('./shared-objects/message-object.js');  
 const Message = msgModule.Message;
-const usrModule = require('../shared-objects/user-object.js');  
+const usrModule = require('./shared-objects/user-object.js');  
 const User = usrModule.User;
 
 // Server Config
 var config = require('./config.json');
-var colours = require('../shared-objects/colours.json');
+var colours = require('./shared-objects/colours.json');
 
 // Other Modules
 const shortid = require('shortid');
@@ -46,9 +46,6 @@ let surList = [];
 mongo.connect(config.dburl+'/'+config.dbname,{useNewUrlParser: true}, function(err, db){
     // TODO Handle Error
     if (err) throw err;
-    
-    //TODO remove
-    console.log(getRandomColourArr(10));
 
     // Lade Copsi DB
     const copsiDB = db.db("copsi");
@@ -87,7 +84,7 @@ mongo.connect(config.dburl+'/'+config.dbname,{useNewUrlParser: true}, function(e
                         sendUserServerInfo(copsiDB,result[0],socket);
 
                         // User der Map hinzufügen // TODO Farbcode zu online usern hinzufügen 
-                        onlineUserList.set(result[0].id, {socket:socket,user:result[0]}, getRandomColourArr());
+                        onlineUserList.set(result[0].id, {socket:socket,user:result[0],colour: getRandomColourArr()});
                         console.log('Client logged in: '+result[0].username);
 
                        // TODO getServerUserList();
@@ -141,11 +138,11 @@ function initServerFunction(copsiDB){
                         socket.on('server:message:'+obj[0], (msg) => {
 
                             // Handle Anonyme Nachricht
-                            if(dbMsg.type == msgModule.type.anon){
-                                
-                            }else{
-                                serverList.get(msg.serverId)[1].to(obj[1]+obj[0]).emit('server:message',msg);
-                            }     
+                            if(msg.type == msgModule.type.anon){
+                                var col = onlineUserList.get(msg.senderId).colour;
+                                msg.senderId = col;
+                            }
+                            serverList.get(msg.serverId)[1].to(obj[1]+obj[0]).emit('server:message',msg);
 
                             //TODO sende nur an user die zugriff auf den channel haben
 
@@ -176,11 +173,13 @@ function initServerFunction(copsiDB){
             // Aufgerufen wenn Nachrichten eines Channels angefordert werden
             socket.on('channel:get:old-messages', (tmpInfo) => {
 
-                let query = { channelId: tmpInfo[1], serverId: tmpInfo[0]};
+                let query = { channelId: tmpInfo.channelId};
                 copsiDB.collection("channel-messages").find(query).toArray(function(err, result) {
 
+                    var messages = result[0].messages;
+
                     //TODO IMPORTANT -> !!!!!!!!!!!!!!!!!!!! NUR AN DEN CLIENT SENDEN DER ANGEFRAGT HAT NICHT AN ALLE
-                    serverList.get(tmpInfo[0])[1].to(tmpInfo[0]+tmpInfo[1]).emit('channel:receive:old-messages',result[0].messages);
+                    serverList.get(tmpInfo.serverId)[1].to(tmpInfo.serverId+tmpInfo.channelId).emit('channel:receive:old-messages',{messages: messages, type: tmpInfo.type});
 
                 });
 
@@ -237,8 +236,6 @@ function initServerFunction(copsiDB){
 
                         serverList.get(tmpInfo.serverId)[1].to(tmpInfo.serverId+tmpInfo.channelId).emit('channel:files:get:uploaded',result);
 
-
-                        console.log('done!');
                     });
 
                    // var writestream = gfs.createWriteStream(options);
@@ -357,15 +354,6 @@ function sendUserServerInfo(copsiDB,user,socket){
         // TODO im user objekt sollte der komplette user mitgesendet werden anstatt nur der ID
         socket.emit('user:logged-in:personal-info',[user,tmpUserServerList]);
     });
-}
-
-// Gibt eine Liste aller User auf einem Server zurück, ohne persönliche Daten (Pw)
-function getServerUserList(){
-    // TODO Schleife durch userliste um server attribut zu checken
-    console.log(userList);
-    for(var i;i<userList.length;i++){
-        console.log(userList[i]);
-    }
 }
 
 /*

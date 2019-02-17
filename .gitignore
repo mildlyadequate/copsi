@@ -83,3 +83,5 @@ logs
 *.pem
 *.swp
 *.pfx
+
+release-builds/

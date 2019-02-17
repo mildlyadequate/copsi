@@ -4,9 +4,26 @@ const url = require('url');
 const path = require('path');
 const{app,BrowserWindow,Menu, ipcMain, dialog} = electron;
 const fs = require('fs');
+const storage = require('electron-json-storage');
 
 // Client Config
+// TODO geht noch nicht - lädt nur lokale nicht veränderbare
 var config = require('./config.json');
+
+storage.has('config', function(error, hasKey) {
+    if (error) throw error;
+  
+    if (hasKey) {
+        storage.get('config', function(error, data) {
+            if (error) throw error;
+            config = data.config;
+        });
+    }else{
+        storage.set('config', { con }, function(error) {
+            if (error) throw error;
+        });
+    }
+});
 
 // SocketIO
 const ioUrl = config.url+':'+config.port;
@@ -21,9 +38,9 @@ let serverList = new Map();
 let userMe;
 
 // Custom Modules
-const msgModule = require('../shared-objects/message-object.js');  
+const msgModule = require('./shared-objects/message-object.js');  
 const Message = msgModule.Message;
-const usrModule = require('../shared-objects/user-object.js');  
+const usrModule = require('./shared-objects/user-object.js');  
 const User = usrModule.User;
 const utils = require('./custom-modules/utils.js');
 
@@ -34,36 +51,20 @@ let mainWindow;
 let currentWidth = 1220;
 let currentHeight = 630;
 
-
 /*
 //////////////////////////// Electron App Main ////////////////////////////////////////
 */
 
+app.on('window-all-closed', app.quit);
+
 app.on('ready', function(){
 
-    require('devtron').install();
+    if(config.dev) require('devtron').install();
 
     // ----- MAIN WINDOW -----
 
     // Applikations Fenster
-    mainWindow = createMainWindow();
-
-    // Ready to show verhindert 'weißes aufblinken' wie man es vom browser kennt
-    mainWindow.once('ready-to-show', ()=>{
-       mainWindow.show();
-       mainWindow.webContents.send('window:resize', currentHeight);
-       if(config.dev) mainWindow.webContents.openDevTools();
-    });
-
-    // Wenn Applikation geschlossen wird
-    mainWindow.on('closed', function(){
-        app.quit();
-    });
-});
-
-function createMainWindow(){
-
-    var wndw = new BrowserWindow({
+    mainWindow =  new BrowserWindow({
         width: currentWidth, 
         height: currentHeight,
         minHeight: 550,
@@ -74,14 +75,21 @@ function createMainWindow(){
     });
 
     // Lade Login Form zuerst
-    wndw.loadURL(url.format({
+    mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'login-form.html'),
         protocol:'file:',
         slashes: true
     }));
 
+    // Ready to show verhindert 'weißes aufblinken' wie man es vom browser kennt
+    mainWindow.once('ready-to-show', ()=>{
+       mainWindow.show();
+       mainWindow.webContents.send('window:resize', currentHeight);
+       if(config.dev) mainWindow.webContents.openDevTools();
+    });
+
     // Send current height on resize to adjust scrollbar
-    wndw.on('resize', function(e){
+    mainWindow.on('resize', function(e){
         var height = mainWindow.getSize()[1];
         if(currentHeight != height){
             currentHeight = height;
@@ -89,8 +97,12 @@ function createMainWindow(){
         }
     });
 
-    return wndw;
-}
+    // Wenn Applikation geschlossen wird
+    mainWindow.on('closed', function(){
+        app.quit();
+    });
+
+});
 
 /*
 //////////////////////////// IPC MAIN ////////////////////////////////////////
@@ -112,15 +124,13 @@ ipcMain.on('server:message:send',function(e,msg){
 // Wenn ein Channel geladen werden soll fordert dieses Event den Server auf
 ipcMain.on('channel:get:old-messages',function(e,tmpInfo){
     
-    // tmpInfo = [serverId,channelId]
-    serverList.get(tmpInfo[0])[0].emit('channel:get:old-messages',tmpInfo);
+    serverList.get(tmpInfo.serverId)[0].emit('channel:get:old-messages',tmpInfo);
 
 });
 
 // Wenn ein Channel geladen werden soll fordert dieses Event den Server auf
 ipcMain.on('channel:files:get:metadata',function(e,tmpInfo){
     
-    // tmpInfo = [serverId,channelId]
     serverList.get(tmpInfo.serverId)[0].emit('channel:files:get:metadata',tmpInfo);
 
 });

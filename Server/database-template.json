@@ -1,0 +1,79 @@
+{
+    "users":
+    [
+        {"id":"1yClecbH7","username":"sesc0043","nickname":"Sebastian Schuler","password": "123","lastOnline":"27.11.2018","registered":"20.11.2014","profilePicture":"profPic1"},
+        {"id":"wNmf_Cyq1Y","username":"phsp0001","nickname":"Philipp Spandl","password": "123","lastOnline":"23.11.2018","registered":"10.11.2015","profilePicture":"profPic2"},
+        {"id":"KNSXuzuDFn","username":"diwa0015","nickname":"Dieter Wallach","password": "123","lastOnline":"29.11.2018","registered":"10.11.2013","profilePicture":"profPic3"},
+        {"id":"WfVpvMFDxP","username":"cami0002","nickname":"Caroline Miller","password": "123","lastOnline":"29.11.2018","registered":"10.11.2013","profilePicture":"profPic4"}
+    ],
+    "servers":
+    [
+        {"id":"GMODJXM_ZC0","shortName":"HCI","name":"Entwicklung Interaktiver Systeme","subjectArea":"IMST","password": "hci2019",
+            "channels":[
+                {"id":"5n1qC42WnG","name":"Allgemein","type":0,"messages":[],"isCategory":true,"picture":"","roleAbility":{"read":["xJR1d0ubkw","-eLWx4FKaE"],"write":["xJR1d0ubkw"],"fileupload":["xJR1d0ubkw"],"manageMsgs":["xJR1d0ubkw"]},
+                    "childChannels":[
+                        {"id":"0jpJ8DRxOM","name":"Neuigkeiten","type":2,"messages":[],"isCategory":false,"picture":"fa-file-alt","roleAbility":{"read":["xJR1d0ubkw","-eLWx4FKaE"],"write":["xJR1d0ubkw"],"fileupload":["xJR1d0ubkw"],"manageMsgs":["xJR1d0ubkw"]},"childChannels":[]}
+                    ]
+                },
+                {"id":"KwcPowXusX","name":"Grundlagen","type":0,"messages":[],"isCategory":true,"picture":"","roleAbility":{"read":["xJR1d0ubkw","-eLWx4FKaE"],"write":["xJR1d0ubkw"],"fileupload":["xJR1d0ubkw"],"manageMsgs":["xJR1d0ubkw"]},
+                    "childChannels":[
+                        {"id":"RZYYYJPZjk","name":"Skripte","type":5,"messages":[],"isCategory":false,"picture":"fa-book","roleAbility":{"read":["xJR1d0ubkw","-eLWx4FKaE"],"write":["xJR1d0ubkw"],"fileupload":["xJR1d0ubkw"],"manageMsgs":["xJR1d0ubkw"]},"childChannels":[]},
+                        {"id":"zcemxjI2Us","name":"Übungen","type":5,"messages":[],"isCategory":false,"picture":"fa-graduation-cap","roleAbility":{"read":["xJR1d0ubkw","-eLWx4FKaE"],"write":["xJR1d0ubkw"],"fileupload":["xJR1d0ubkw"],"manageMsgs":["xJR1d0ubkw"]},"childChannels":[]},
+                        {"id":"GDlNDMcb5p","name":"Beispiele","type":5,"messages":[],"isCategory":false,"picture":"fa-folder-open","roleAbility":{"read":["xJR1d0ubkw","-eLWx4FKaE"],"write":["xJR1d0ubkw"],"fileupload":["xJR1d0ubkw"],"manageMsgs":["xJR1d0ubkw"]},"childChannels":[]}
+                    ]
+                },
+                {"id":"02voKz9ecq","name":"Fragen & Antworten","type":0,"messages":[],"isCategory":true,"picture":"","roleAbility":{"read":["xJR1d0ubkw","-eLWx4FKaE"],"write":["xJR1d0ubkw"],"fileupload":["xJR1d0ubkw"],"manageMsgs":["xJR1d0ubkw"]},
+                    "childChannels":[
+                        {"id":"BXJsv68Sqm","name":"Anonym","type":4,"messages":[],"isCategory":false,"picture":"fa-ghost","roleAbility":{"read":["xJR1d0ubkw","-eLWx4FKaE"],"write":["xJR1d0ubkw"],"fileupload":["xJR1d0ubkw"],"manageMsgs":["xJR1d0ubkw"]},"childChannels":[]},
+                        {"id":"el-Cu5mBLW","name":"Diskussion","type":1,"messages":[],"isCategory":false,"picture":"fa-question-circle","roleAbility":{"read":["xJR1d0ubkw","-eLWx4FKaE"],"write":["xJR1d0ubkw"],"fileupload":["xJR1d0ubkw"],"manageMsgs":["xJR1d0ubkw"]},"childChannels":[]}
+                    ]
+                }
+            ],
+            "roles":[
+                {"id":"xJR1d0ubkw","name":"Professor","color":"FFFFFF"},
+                {"id":"-eLWx4FKaE","name":"Student","color":"10FFFF"}
+            ],
+            "userAbility":{
+                "admin":["xJR1d0ubkw"],
+                "moderator":["xJR1d0ubkw"],
+                "announcement":["xJR1d0ubkw"]
+            }
+        },
+        {"id":"Ik1f2alNWug","shortName":"MGS","name":"Mediengestaltung","subjectArea":"IMST", "password": "mgs",
+            "channels":[
+                {"id":"S-GcgKyKIY","name":"News","type":2,"messages":[],"isCategory":true,"picture":"fa-file-alt","roleAbility":{"read":["xJR1d0ubkw","-eLWx4FKaE"],"write":["xJR1d0ubkw"],"fileupload":["xJR1d0ubkw"],"manageMsgs":["xJR1d0ubkw"]},
+                    "childChannels":[
+                        {"id":"0jpJ8QRxOM","name":"Klausurrelevant","type":2,"messages":[],"isCategory":false,"picture":"fa-file-alt","roleAbility":{"read":["xJR1d0ubkw","-eLWx4FKaE"],"write":["xJR1d0ubkw"],"fileupload":["xJR1d0ubkw"],"manageMsgs":["xJR1d0ubkw"]},"childChannels":[]}
+                    ]
+                }
+            ],
+            "roles":[
+                {"id":"xJR1d0ubkw","name":"Professor","color":"FFFFFF"},
+                {"id":"-eLWx4FKaE","name":"Student","color":"10FFFF"}
+            ],
+            "userAbility":{
+                "admin":["xJR1d0ubkw"],
+                "moderator":["xJR1d0ubkw"],
+                "announcement":["xJR1d0ubkw"]
+            }
+        }
+    ],
+    "sur":[
+        {"serverid":"GMODJXM_ZC0","userid":"1yClecbH7","roleid":"-eLWx4FKaE"},
+        {"serverid":"GMODJXM_ZC0","userid":"wNmf_Cyq1Y","roleid":"-eLWx4FKaE"},
+        {"serverid":"GMODJXM_ZC0","userid":"KNSXuzuDFn","roleid":"xJR1d0ubkw"},
+        {"serverid":"Ik1f2alNWug","userid":"1yClecbH7","roleid":"-eLWx4FKaE"},
+        {"serverid":"Ik1f2alNWug","userid":"wNmf_Cyq1Y","roleid":"-eLWx4FKaE"},
+        {"serverid":"Ik1f2alNWug","userid":"KNSXuzuDFn","roleid":"xJR1d0ubkw"},
+        {"serverid":"GMODJXM_ZC0","userid":"WfVpvMFDxP","roleid":"-eLWx4FKaE"}
+    ],
+    "channelmessages":[
+        {"channelId":"0jpJ8DRxOM","serverId":"GMODJXM_ZC0","messages":[]},
+        {"channelId":"RZYYYJPZjk","serverId":"GMODJXM_ZC0","messages":[]},
+        {"channelId":"zcemxjI2Us","serverId":"GMODJXM_ZC0","messages":[]},
+        {"channelId":"GDlNDMcb5p","serverId":"GMODJXM_ZC0","messages":[]},
+        {"channelId":"BXJsv68Sqm","serverId":"GMODJXM_ZC0","messages":[]},
+        {"channelId":"el-Cu5mBLW","serverId":"GMODJXM_ZC0","messages":[]},
+        {"channelId":"0jpJ8QRxOM","serverId":"Ik1f2alNWug","messages":[]}
+    ]
+}

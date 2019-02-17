@@ -6,11 +6,11 @@ const {ipcRenderer,shell,Menu,dialog} = electron;
 const initialWindowHeight = 630;
 
 // Custom Modules
-const msgModule = require('../shared-objects/message-object.js');  
+const msgModule = require('./shared-objects/message-object.js');  
 const Message = msgModule.Message;
-const chnModule = require('../shared-objects/channel-object.js');  
+const chnModule = require('./shared-objects/channel-object.js');  
 const Channel = chnModule.Message;
-const utils = require('../shared-objects/utils.js');  
+const utils = require('./shared-objects/utils.js');  
 
 // Server Display Elemente
 const divServerUserList = document.getElementById('divServerUserList');
@@ -35,6 +35,7 @@ const txaMessage = document.getElementById('txaMessage');
 let selectedServerObject;
 let selectedServerId = '';
 let selectedChannelId = '';
+let selectedChannelType;
 let serverDataObject;
 
 // Me
@@ -76,7 +77,7 @@ ipcRenderer.on('user:personal-user-info',function(e,initObject){
   serverChanged(selectedServerId);
 
   // Aktuellen Channel wechseln TODO: dynamisch den ersten channel erkennen
-  selectFirstChannel();
+  selectFirstChannel(serverDataObject[0]);
 
   // Markiere selektierten Channel
   var newSelected = document.getElementById('srvObj_'+selectedServerId);
@@ -86,9 +87,17 @@ ipcRenderer.on('user:personal-user-info',function(e,initObject){
 // Wenn eine Nachricht empfangen wurde
 ipcRenderer.on('server:message',function(e,msg){
 
+
+
   // Check ob Nachricht auf aktuellem Server
   if(msg.serverId == selectedServerId){
-    divMessageContainer.appendChild(getMessageElement(msg));
+
+    // Check ob Nachricht anonym
+    if(msg.type == msgModule.type.anon){
+      divMessageContainer.appendChild(getAnonMessageElement(msg));
+    }else{
+      divMessageContainer.appendChild(getMessageElement(msg));
+    }
   }
 
   // Runter Scrollen
@@ -96,23 +105,31 @@ ipcRenderer.on('server:message',function(e,msg){
 });
 
 // Empfange alte Nachrichten nachdem der Channel geändert wurde
-ipcRenderer.on('channel:receive:old-messages',function(e,messages){
+ipcRenderer.on('channel:receive:old-messages',function(e,channeldata){
+
+  var messages = channeldata.messages;
 
   //TODO Check ob immernoch der gleiche channel ausgewählt ist
 
   //TODO nur die letzten 50 Nachrichten laden (am besten schon im server)
   divMessageContainer.innerHTML = '';
 
-  //if() TODO Check channel type
-
   // Wenn keine Nachrichten vorhanden sind, zeige Bild + Nachricht
   // TODO verschwindet nicht wenn eine Nachricht geschickt wird
-  if(messages.length==0){
+  if(channeldata.messages.length==0){
     showEmptyChannelIcon();
   }else{
+
     // Wenn Nachrichten vorhanden sind, füge sie dem div hinzu
-    for(var i=0;i<messages.length;i++){
-      divMessageContainer.appendChild(getMessageElement(messages[i]));
+    if(channeldata.type == chnModule.type.anonchat){
+      for(var i=0;i<messages.length;i++){
+        console.log(messages[i].senderId);
+        divMessageContainer.appendChild(getAnonMessageElement(messages[i]));
+      }
+    }else{
+      for(var i=0;i<messages.length;i++){
+        divMessageContainer.appendChild(getMessageElement(messages[i]));
+      }
     }
   }
 
@@ -429,6 +446,42 @@ function getMessageElement(msg){
   return divBox;
 }
 
+// Erzeugt eine Nachricht im Html
+function getAnonMessageElement(msg){
+
+  // P Content Element
+  var pContent = document.createElement('p');
+  //TODO Name generieren und in strong einfügen
+  pContent.innerHTML = '<strong>'+''+'</Strong><small>'+moment(msg.timestamp).format("DD.MM.YYYY, HH:mm")+'</small> <br>'+msg.content;
+
+  // Content Inner Div
+  var divInnerContent = document.createElement('div');
+  divInnerContent.classList.add('content');
+  divInnerContent.appendChild(pContent);
+
+  // Content Div
+  var divContent = document.createElement('div');
+  divContent.classList.add('media-content');
+  divContent.appendChild(divInnerContent);
+
+  // ARTICLE
+  var article = document.createElement('article');
+  article.classList.add('media');
+  article.appendChild(divContent);
+
+  // Äußerer Container
+  var divBox = document.createElement('div');
+  divBox.classList.add('box');
+
+  var colour = hexToRgb(msg.senderId);
+
+  divBox.style.backgroundColor = "rgba("+colour.r+","+colour.g+","+colour.b+",0.3)";
+  divBox.appendChild(article);
+
+  return divBox;
+}
+
+
 // Erstellt ein File ELement in html
 function getFileElement(fileMetainfo){
   var fileIcon = document.createElement('i');
@@ -531,6 +584,8 @@ function channelChanged(arg){
 
   // Setze selektierte channel variable
   selectedChannelId = arg.id;
+  // Channel Type
+  selectedChannelType = arg.type;
 
   // Channel Typ CHAT
   if(arg.type==chnModule.type.chat){
@@ -547,7 +602,7 @@ function channelChanged(arg){
     txaMessage.placeholder = 'Nachricht an @'+arg.name;
 
     // Event senden um alte Nachrichten zu laden
-    ipcRenderer.send('channel:get:old-messages',[selectedServerId,selectedChannelId]);
+    ipcRenderer.send('channel:get:old-messages',{serverId: selectedServerId, channelId: selectedChannelId});
 
   // Channel Typ FILES
   }else if(arg.type==chnModule.type.files){
@@ -590,7 +645,7 @@ function channelChanged(arg){
 
     if(arg.roleAbility.read.includes(roleMe)){
       // Event senden um alte Nachrichten zu laden
-      ipcRenderer.send('channel:get:old-messages',[selectedServerId,selectedChannelId]);
+      ipcRenderer.send('channel:get:old-messages',{serverId: selectedServerId,channelId: selectedChannelId, type: chnModule.type.chat});
     }
 
   // Channel Typ ANONCHAT
@@ -606,6 +661,9 @@ function channelChanged(arg){
 
     // Platzhalter im Textfeld ändern
     txaMessage.placeholder = 'Nachricht an @'+arg.name;
+
+    // Event senden um alte Nachrichten zu laden
+    ipcRenderer.send('channel:get:old-messages',{serverId: selectedServerId,channelId: selectedChannelId, type: chnModule.type.anonchat});
   }
 }
 
@@ -613,14 +671,16 @@ function channelChanged(arg){
 function onMessageEnterPressed(e){
   if(e.keyCode==13){
 
-    //TODO
-    var type = msgModule.type.txt;
-    if(){
-
+    // Setze Typ in Nachricht
+    var type;
+    if(selectedChannelType == chnModule.type.anonchat){
+      type = msgModule.type.anon;
+    }else{
+      type = msgModule.type.txt;
     }
 
     // Erstelle Nachricht
-    var tmpmsg = new Message(shortid.generate(), msgModule.type.txt, new Date(), txaMessage.value, userMe.id, selectedChannelId, selectedServerId);
+    var tmpmsg = new Message(shortid.generate(), type, new Date(), txaMessage.value, userMe.id, selectedChannelId, selectedServerId);
 
     ipcRenderer.send('server:message:send',tmpmsg);
     txaMessage.value = '';
@@ -655,7 +715,7 @@ function serverChanged(newSelectedServer){
       setChannels(serverDataObject[i].channels);
       setServerUserList(serverDataObject[i]);
 
-      selectFirstChannel();
+      selectFirstChannel(serverDataObject[i]);
     }
   }
 
@@ -663,11 +723,30 @@ function serverChanged(newSelectedServer){
 }
 
 // Selektiert den ersten Channel des Servers, aufgerufen beim start und wenn 
-function selectFirstChannel(){
-  selectedChannelId = serverDataObject[0].channels[0].childChannels[0];
+function selectFirstChannel(server){
+  selectedChannelId = server.channels[0].childChannels[0];
   channelChanged(selectedChannelId);
 }
 
 function handleUploadBtn(){
   ipcRenderer.send('channel:files:upload',{serverId: selectedServerId,channelId: selectedChannelId, userId: userMe.id});
+}
+
+/*
+//////////////////////////// Helper Functions ////////////////////////////////////////
+*/
+
+function hexToRgb(hex) {
+  // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+  var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+      return r + r + g + g + b + b;
+  });
+
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+  } : null;
 }
