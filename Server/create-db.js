@@ -2,6 +2,9 @@
 const bcrypt = require('bcryptjs');
 const shortid = require('shortid');
 
+// Server Config
+var config = require('./config.json');
+
 // Eigene Objekte
 // User
 const usrModule = require('../shared-objects/user-object.js');  
@@ -29,7 +32,7 @@ const ChannelMessages = channelMessagesModule.ChannelMessages;
 // Datenbank
 const dbName = "copsi";
 const MongoClient = require('mongodb').MongoClient;
-const url = "mongodb://localhost:27017/"+dbName;
+const url = config.dburl+'/'+dbName;
 
 /*
 //////////////////////////// Create Objects ////////////////////////////////////////
@@ -152,7 +155,7 @@ MongoClient.connect(url, function(err, db) {
 
   // Erstele Datenbank
   let dbo = db.db(dbName);
-
+  
   // Erstelle Tabelle
   dbo.createCollection("users", function(err, res) {
     if (err) throw err;

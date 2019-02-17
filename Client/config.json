@@ -1,0 +1,6 @@
+{
+    "url": "http://localhost",
+    "port": "8000",
+    "dev": true,
+    "autologin": true
+}

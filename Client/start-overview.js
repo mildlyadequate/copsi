@@ -18,6 +18,7 @@ const navServerChannelList = document.getElementById('sm-channel-list');
 const ulServerListLeft = document.getElementById('serverListeLinks');
 
 // Content
+const divDatePin = document.getElementById('sm-content-datepin');
 const divchannelTitle = document.getElementById('sm-channel-title');
 const divContentChat = document.getElementById('sm-content-chat');
 const divContentFiles = document.getElementById('sm-content-files');
@@ -414,7 +415,6 @@ function getMessageElement(msg){
   divContent.classList.add('media-content');
   divContent.appendChild(divInnerContent);
 
-  // 
   // ARTICLE
   var article = document.createElement('article');
   article.classList.add('media');
@@ -456,8 +456,7 @@ function getFileElement(fileMetainfo){
   link.onclick = function(arg) {
     return function() {
       ipcRenderer.send('channel:file:download',{filename: arg, serverId: selectedServerId});
-      console.log("loooooool"+arg);
-    }
+    };
   }(fileMetainfo.filename);
   link.appendChild(downloadIcon);
 
@@ -542,6 +541,7 @@ function channelChanged(arg){
     // Elemente ausblenden
     divContentFiles.classList.add('hide');
     btnFileUpload.classList.add('hide');
+    divDatePin.classList.add('hide');
 
     // Platzhalter im Textfeld ändern
     txaMessage.placeholder = 'Nachricht an @'+arg.name;
@@ -553,10 +553,11 @@ function channelChanged(arg){
   }else if(arg.type==chnModule.type.files){
 
       // Elemente einblenden
+      divContentFiles.classList.remove('hide');
+      // Elemente ausblenden
       txaMessage.classList.add('hide');
       divContentChat.classList.add('hide');
-      // Elemente ausblenden
-      divContentFiles.classList.remove('hide');
+      divDatePin.classList.add('hide');
 
       // Check welche Rechte dieser User hat
       if(arg.roleAbility.fileupload.includes(roleMe)){
@@ -574,6 +575,8 @@ function channelChanged(arg){
     //TODO wenn aktueller user schreibrechte hat dann zeige chatbox
     // Elemente einblenden
     divContentChat.classList.remove('hide');
+    divDatePin.classList.remove('hide');
+
     // Elemente ausblenden
     divContentFiles.classList.add('hide');
     btnFileUpload.classList.add('hide');
@@ -581,6 +584,9 @@ function channelChanged(arg){
     if(arg.roleAbility.write.includes(roleMe)){
       txaMessage.classList.remove('hide');
     }
+
+    // Platzhalter im Textfeld ändern
+    txaMessage.placeholder = 'Nachricht an @'+arg.name;
 
     if(arg.roleAbility.read.includes(roleMe)){
       // Event senden um alte Nachrichten zu laden
@@ -596,6 +602,7 @@ function channelChanged(arg){
     // Elemente ausblenden
     divContentFiles.classList.add('hide');
     btnFileUpload.classList.add('hide');
+    divDatePin.classList.add('hide');
 
     // Platzhalter im Textfeld ändern
     txaMessage.placeholder = 'Nachricht an @'+arg.name;
@@ -605,6 +612,12 @@ function channelChanged(arg){
 // Enter taste macht neue zeile killme
 function onMessageEnterPressed(e){
   if(e.keyCode==13){
+
+    //TODO
+    var type = msgModule.type.txt;
+    if(){
+
+    }
 
     // Erstelle Nachricht
     var tmpmsg = new Message(shortid.generate(), msgModule.type.txt, new Date(), txaMessage.value, userMe.id, selectedChannelId, selectedServerId);

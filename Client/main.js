@@ -5,8 +5,11 @@ const path = require('path');
 const{app,BrowserWindow,Menu, ipcMain, dialog} = electron;
 const fs = require('fs');
 
+// Client Config
+var config = require('./config.json');
+
 // SocketIO
-const ioUrl = "http://localhost:8000";
+const ioUrl = config.url+':'+config.port;
 const io = require("socket.io-client");
 const ioClient = io.connect(ioUrl);
 
@@ -49,7 +52,7 @@ app.on('ready', function(){
     mainWindow.once('ready-to-show', ()=>{
        mainWindow.show();
        mainWindow.webContents.send('window:resize', currentHeight);
-       mainWindow.webContents.openDevTools();
+       if(config.dev) mainWindow.webContents.openDevTools();
     });
 
     // Wenn Applikation geschlossen wird
@@ -164,7 +167,7 @@ ioClient.on('connect', function () {
 
     //TODO Dev / Remove
     //ioClient.emit('user:login',['sesc0043','123']);
-    ioClient.emit('user:login',['diwa0015','123']);
+    if(config.autologin) ioClient.emit('user:login',['diwa0015','123']);
 });
 
 // Wenn eingeloggt
@@ -238,9 +241,3 @@ function switchScreen(screenHtml) {
         slashes: true
     }));
 }
-
-/*
-//////////////////////////// FS FUNCTIONS ////////////////////////////////////////
-*/
-
-

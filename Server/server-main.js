@@ -4,8 +4,13 @@ const Message = msgModule.Message;
 const usrModule = require('../shared-objects/user-object.js');  
 const User = usrModule.User;
 
+// Server Config
+var config = require('./config.json');
+var colours = require('../shared-objects/colours.json');
+
 // Other Modules
 const shortid = require('shortid');
+const colcon = require('color-convert');
 
 // Server
 const app = require('express')();
@@ -22,7 +27,7 @@ const bcrypt = require('bcryptjs');
 var streamifier = require('streamifier');
 
 // Listen auf Port
-server.listen(8000);
+server.listen(config.port);
 console.log('Server running.');
 
 // Datenbank Daten Maps
@@ -38,15 +43,18 @@ let surList = [];
 */
 
 // Verbinde DB
-mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err, db){
+mongo.connect(config.dburl+'/'+config.dbname,{useNewUrlParser: true}, function(err, db){
     // TODO Handle Error
     if (err) throw err;
     
+    //TODO remove
+    console.log(getRandomColourArr(10));
+
     // Lade Copsi DB
     const copsiDB = db.db("copsi");
     bucket = new mongo.GridFSBucket(copsiDB);
     gfs = Grid(copsiDB, mongo);
-    console.log("DB connected");
+    console.log("DB connected.");
 
     // Lade alle Daten (Methoden rufen sich gegenseitig auf um Reihenfolge zu garantieren)
     updateUserList(copsiDB);
@@ -74,14 +82,12 @@ mongo.connect('mongodb://127.0.0.1/copsi',{useNewUrlParser: true}, function(err,
                 }else{
                     // Check Passwort mit bcrypt
                     if(bcrypt.compareSync(loginData[1], result[0].password)){
-                        // Sende Daten an Client
-                        //socket.emit('user:logged-in',[result[0]]);
 
                         // Sende Daten an Client
                         sendUserServerInfo(copsiDB,result[0],socket);
 
-                        // User der Map hinzufügen
-                        onlineUserList.set(result[0].id, {socket:socket,user:result[0]});
+                        // User der Map hinzufügen // TODO Farbcode zu online usern hinzufügen 
+                        onlineUserList.set(result[0].id, {socket:socket,user:result[0]}, getRandomColourArr());
                         console.log('Client logged in: '+result[0].username);
 
                        // TODO getServerUserList();
@@ -134,7 +140,13 @@ function initServerFunction(copsiDB){
                     (function(obj) { 
                         socket.on('server:message:'+obj[0], (msg) => {
 
-                            serverList.get(msg.serverId)[1].to(obj[1]+obj[0]).emit('server:message',msg);
+                            // Handle Anonyme Nachricht
+                            if(dbMsg.type == msgModule.type.anon){
+                                
+                            }else{
+                                serverList.get(msg.serverId)[1].to(obj[1]+obj[0]).emit('server:message',msg);
+                            }     
+
                             //TODO sende nur an user die zugriff auf den channel haben
 
                             (function(dbMsg) { 
@@ -320,6 +332,8 @@ function sendUserServerInfo(copsiDB,user,socket){
                 // Check ob user ID mit dem aktuellen User und Server ID mit dem aktuell angeschauten Server übereinstimmen
                 if(surList[j].serverid===result[i].id){
 
+
+
                     // Erstellt und fügt User zum Server Objekt hinzu. In der DB werden diese nur durch Sur verbunden
                     var tmpUser = userList.get(surList[j].userid);
                     // Entferne private Daten des Benutzers (PW)
@@ -357,3 +371,13 @@ function getServerUserList(){
 /*
 //////////////////////////// Funktionen ////////////////////////////////////////
 */
+// TODO
+function getRandomColourArr(){
+
+    // Colour Array
+    var arr = Object.values(colours);
+    // Pick Random One
+    var i = Math.floor((Math.random() * arr.length));
+
+    return arr[i];
+}

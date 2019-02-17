@@ -1,5 +1,3 @@
-//TODO idk lol
-
 function Message (id, type, timestamp, content, senderId, channelId, serverId) {
     this.id = id,
     this.type = type,  
@@ -16,7 +14,6 @@ function Message (id, type, timestamp, content, senderId, channelId, serverId) {
 module.exports = {
 
     Message : Message,
+    type : Object.freeze({"txt":1, "img":2, "vid":3, "doc":4, "anon":5})
 
-    type : Object.freeze({"txt":1, "img":2, "vid":3, "doc":4})
-
-}
+};
